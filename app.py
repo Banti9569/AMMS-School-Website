@@ -13,11 +13,14 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
-    # Ensure required directories exist
-    os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'gallery'), exist_ok=True)
-    os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'notices'), exist_ok=True)
-    os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'staff'), exist_ok=True)
-    os.makedirs(os.path.dirname(app.config['DATABASE']), exist_ok=True)
+    # Ensure required directories exist (safely catch Read-Only filesystem on serverless platforms)
+    try:
+        os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'gallery'), exist_ok=True)
+        os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'notices'), exist_ok=True)
+        os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'staff'), exist_ok=True)
+        os.makedirs(os.path.dirname(app.config['DATABASE']), exist_ok=True)
+    except OSError:
+        pass
 
     # Initialize SQLite database & seed
     with app.app_context():

@@ -5,13 +5,28 @@ from werkzeug.security import generate_password_hash
 from config import Config
 
 def get_db():
+    # In Vercel serverless functions, copy template db to /tmp if not already initialized
+    if getattr(Config, 'IS_VERCEL', False) and Config.DATABASE.startswith('/tmp/'):
+        if not os.path.exists(Config.DATABASE):
+            template_db = os.path.join(Config.BASE_DIR, 'database', 'school.db')
+            if os.path.exists(template_db):
+                import shutil
+                try:
+                    os.makedirs(os.path.dirname(Config.DATABASE), exist_ok=True)
+                    shutil.copy2(template_db, Config.DATABASE)
+                except OSError:
+                    pass
+
     conn = sqlite3.connect(Config.DATABASE)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
     return conn
 
 def init_db():
-    os.makedirs(os.path.dirname(Config.DATABASE), exist_ok=True)
+    try:
+        os.makedirs(os.path.dirname(Config.DATABASE), exist_ok=True)
+    except OSError:
+        pass
     conn = get_db()
     cursor = conn.cursor()
 
@@ -194,21 +209,21 @@ def seed_data_if_empty():
     # Check if admin exists
     cursor.execute("SELECT COUNT(*) FROM users WHERE role = 'admin'")
     if cursor.fetchone()[0] == 0:
-        # Seed Admin
-        admin_pass = generate_password_hash("admin123")
+        # Seed Admin (credentials configurable via environment variables)
+        admin_pass = generate_password_hash(os.environ.get('ADMIN_INITIAL_PASSWORD', 'admin123'))
         cursor.execute("""
         INSERT INTO users (role, username, password_hash, full_name, email, phone)
         VALUES ('admin', 'admin', ?, 'Chief Administrator', 'admin@almajidmissionschool.edu.in', '9434056789')
         """, (admin_pass,))
 
-        # Seed Parents
-        parent_pass = generate_password_hash("parent123")
+        # Seed Parents (dummy school domains and non-personal sample numbers)
+        parent_pass = generate_password_hash(os.environ.get('PARENT_INITIAL_PASSWORD', 'parent123'))
         cursor.execute("""
         INSERT INTO users (role, username, password_hash, full_name, email, phone)
         VALUES 
-        ('parent', '9876543210', ?, 'Md. Rafiqul Islam', 'rafiqul.islam@gmail.com', '9876543210'),
-        ('parent', '9876543211', ?, 'Nurul Hasan Mondal', 'nurul.hasan@yahoo.com', '9876543211'),
-        ('parent', '9876543212', ?, 'Abdul Karim Sk', 'karim.sk786@gmail.com', '9876543212')
+        ('parent', '9876543210', ?, 'Md. Rafiqul Islam', 'parent1@almajidmissionschool.edu.in', '9876543210'),
+        ('parent', '9876543211', ?, 'Nurul Hasan Mondal', 'parent2@almajidmissionschool.edu.in', '9876543211'),
+        ('parent', '9876543212', ?, 'Abdul Karim Sk', 'parent3@almajidmissionschool.edu.in', '9876543212')
         """, (parent_pass, parent_pass, parent_pass))
         
         rafiq_id = 2
@@ -405,12 +420,12 @@ def seed_data_if_empty():
             VALUES (?, ?, ?)
             """, (k, t, c))
 
-        # Seed Sample Contact Message
+        # Seed Sample Contact Message (using non-personal example contacts)
         cursor.execute("""
         INSERT INTO contact_messages (name, phone, email, subject, message, is_read)
         VALUES 
-        ('Giasuddin Ansari', '9832155443', 'giasuddin.a@yahoo.com', 'Admission inquiry for Class VI', 'Respected Sir, I want to admit my son to Class VI for the 2026-27 session. Kindly inform me of the last date for submitting the form and hostel facilities if available.', 0),
-        ('Sultana Begum', '9749123890', 'sultana.b@gmail.com', 'School Bus Route to Murshidabad border', 'Hello, do you have a school transport pick-up point near Hazipur Bazar junction? Kindly update the schedule.', 1)
+        ('Admission Guardian', '9876500001', 'inquiry1@example.com', 'Admission inquiry for Class VI', 'Respected Sir, I want to admit my ward to Class VI for the 2026-27 session. Kindly inform me of the last date for submitting the form and facilities if available.', 0),
+        ('Local Resident', '9876500002', 'inquiry2@example.com', 'School Bus Route to Murshidabad border', 'Hello, do you have a school transport pick-up point near Hazipur Bazar junction? Kindly update the schedule.', 1)
         """)
 
     conn.commit()

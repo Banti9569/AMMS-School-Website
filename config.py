@@ -9,16 +9,30 @@ except ImportError:
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
+# Detect if running in Vercel or AWS Lambda serverless environment
+IS_VERCEL = bool(os.environ.get('VERCEL') or os.environ.get('AWS_LAMBDA_FUNCTION_NAME'))
+
 class Config:
     # Security
     SECRET_KEY = os.environ.get('SECRET_KEY', 'al-majid-mission-school-secure-key-2026-hazipur')
     
     # Paths & Storage
-    _db_path = os.environ.get('DATABASE_PATH', os.path.join('database', 'school.db'))
-    DATABASE = _db_path if os.path.isabs(_db_path) else os.path.join(BASE_DIR, _db_path)
+    # In Vercel serverless functions, the project root is read-only; only /tmp is writable.
+    IS_VERCEL = IS_VERCEL
+    BASE_DIR = BASE_DIR
     
-    _upload_folder = os.environ.get('UPLOAD_FOLDER', os.path.join('static', 'uploads'))
-    UPLOAD_FOLDER = _upload_folder if os.path.isabs(_upload_folder) else os.path.join(BASE_DIR, _upload_folder)
+    if IS_VERCEL:
+        _env_db = os.environ.get('DATABASE_PATH')
+        DATABASE = _env_db if (_env_db and _env_db.startswith('/tmp')) else '/tmp/school.db'
+        
+        _env_upload = os.environ.get('UPLOAD_FOLDER')
+        UPLOAD_FOLDER = _env_upload if (_env_upload and _env_upload.startswith('/tmp')) else '/tmp/uploads'
+    else:
+        _db_path = os.environ.get('DATABASE_PATH', os.path.join(BASE_DIR, 'database', 'school.db'))
+        DATABASE = _db_path if os.path.isabs(_db_path) else os.path.join(BASE_DIR, _db_path)
+        
+        _upload_folder = os.environ.get('UPLOAD_FOLDER', os.path.join(BASE_DIR, 'static', 'uploads'))
+        UPLOAD_FOLDER = _upload_folder if os.path.isabs(_upload_folder) else os.path.join(BASE_DIR, _upload_folder)
     
     MAX_CONTENT_LENGTH = int(os.environ.get('MAX_CONTENT_LENGTH_MB', 16)) * 1024 * 1024
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp', 'pdf'}

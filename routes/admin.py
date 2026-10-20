@@ -179,17 +179,20 @@ def teachers():
                 timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
                 filename = f"teacher_{timestamp}_{safe_name}"
                 upload_dir = os.path.join(current_app.config['UPLOAD_FOLDER'], 'staff')
-                os.makedirs(upload_dir, exist_ok=True)
-                save_path = os.path.join(upload_dir, filename)
                 try:
-                    img = Image.open(photo_file)
-                    if img.mode not in ('RGB', 'RGBA'):
-                        img = img.convert('RGB')
-                    img.save(save_path)
-                except Exception:
-                    photo_file.seek(0)
-                    photo_file.save(save_path)
-                photo_url = f"/static/uploads/staff/{filename}"
+                    os.makedirs(upload_dir, exist_ok=True)
+                    save_path = os.path.join(upload_dir, filename)
+                    try:
+                        img = Image.open(photo_file)
+                        if img.mode not in ('RGB', 'RGBA'):
+                            img = img.convert('RGB')
+                        img.save(save_path)
+                    except Exception:
+                        photo_file.seek(0)
+                        photo_file.save(save_path)
+                    photo_url = f"/static/uploads/staff/{filename}"
+                except OSError:
+                    flash('Notice: Serverless storage is read-only; using default staff portrait.', 'info')
                 
             if not photo_url:
                 photo_url = '/static/images/staff/teacher_math.jpg'
@@ -265,9 +268,14 @@ def gallery():
         file = request.files.get('file')
         if file and file.filename != '' and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            upload_path = os.path.join(current_app.config['UPLOAD_FOLDER'], 'gallery', filename)
-            file.save(upload_path)
-            image_url = f"/static/uploads/gallery/{filename}"
+            upload_dir = os.path.join(current_app.config['UPLOAD_FOLDER'], 'gallery')
+            try:
+                os.makedirs(upload_dir, exist_ok=True)
+                upload_path = os.path.join(upload_dir, filename)
+                file.save(upload_path)
+                image_url = f"/static/uploads/gallery/{filename}"
+            except OSError:
+                flash('Notice: Serverless storage is read-only; using default campus photo.', 'info')
             
         if not image_url:
             image_url = '/static/images/school/hero_campus.jpg'
