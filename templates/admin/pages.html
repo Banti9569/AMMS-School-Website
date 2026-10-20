@@ -1,0 +1,132 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Edit Public Pages Content | Admin Panel{% endblock %}
+
+{% block admin_content %}
+
+  <div class="admin-header">
+    <div>
+      <span class="section-subtitle">CMS Content Management</span>
+      <h1 class="admin-title">Edit Public Page Content</h1>
+    </div>
+  </div>
+
+  <form method="POST" action="{{ url_for('admin.pages') }}" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <!-- 1. School History -->
+    <div class="admin-card">
+      <div class="admin-card-header">
+        <h3 class="admin-card-title">📖 School History &amp; Journey</h3>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Heading Title</label>
+        <input type="text" name="history_title" class="form-control" value="{{ pages.history.title if pages.history else 'Our History' }}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Content</label>
+        <textarea name="history_content" class="form-control" rows="4">{{ pages.history.content if pages.history else '' }}</textarea>
+      </div>
+    </div>
+
+    <!-- 2. Mission & Vision -->
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:1.5rem; margin-bottom:1.5rem;">
+      <div class="admin-card" style="margin-bottom:0;">
+        <div class="admin-card-header">
+          <h3 class="admin-card-title">🎯 Institutional Mission</h3>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Title</label>
+          <input type="text" name="mission_title" class="form-control" value="{{ pages.mission.title if pages.mission else 'Our Mission' }}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mission Content</label>
+          <textarea name="mission_content" class="form-control" rows="4">{{ pages.mission.content if pages.mission else '' }}</textarea>
+        </div>
+      </div>
+
+      <div class="admin-card" style="margin-bottom:0;">
+        <div class="admin-card-header">
+          <h3 class="admin-card-title">🌟 Institutional Vision</h3>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Title</label>
+          <input type="text" name="vision_title" class="form-control" value="{{ pages.vision.title if pages.vision else 'Our Vision' }}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Vision Content</label>
+          <textarea name="vision_content" class="form-control" rows="4">{{ pages.vision.content if pages.vision else '' }}</textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Principal's Message & Portrait -->
+    <div class="admin-card">
+      <div class="admin-card-header">
+        <h3 class="admin-card-title">👨‍🏫 Message from the Principal</h3>
+      </div>
+
+      <!-- Principal Photo Upload -->
+      <div style="display:flex; flex-wrap:wrap; align-items:center; gap:1.5rem; margin-bottom:1.25rem; padding:1.25rem; background:var(--bg-main); border:1px solid var(--border-light); border-radius:var(--radius-md);">
+        <div style="text-align:center;">
+          <img src="{{ url_for('static', filename='images/staff/principal.jpg') }}" alt="Principal Photo" style="width:85px; height:85px; border-radius:50%; object-fit:cover; border:3px solid var(--gold); display:block; margin:0 auto 0.35rem;">
+          <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">Current Photo</span>
+        </div>
+        <div style="flex-grow:1; min-width:240px;">
+          <label class="form-label" style="margin-bottom:0.35rem; font-weight:700;">Upload New Principal Photo</label>
+          <input type="file" name="principal_photo" class="form-control" accept="image/png, image/jpeg, image/jpg, image/webp">
+          <small style="color:var(--text-muted); font-size:0.8rem; display:block; margin-top:0.35rem;">
+            Upload portrait (JPG, PNG, or WEBP). It will automatically update the photo on the <strong>Home Page</strong>, <strong>About Us Page</strong>, and <strong>Staff Directory</strong>.
+          </small>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Message Title</label>
+        <input type="text" name="principal_message_title" class="form-control" value="{{ pages.principal_message.title if pages.principal_message else 'Message from the Principal' }}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Message Body</label>
+        <textarea name="principal_message_content" class="form-control" rows="5">{{ pages.principal_message.content if pages.principal_message else '' }}</textarea>
+      </div>
+    </div>
+
+    <!-- 4. Admissions & Fee Policy Notes -->
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:1.5rem; margin-bottom:1.5rem;">
+      <div class="admin-card" style="margin-bottom:0;">
+        <div class="admin-card-header">
+          <h3 class="admin-card-title">🎓 Admissions Guidelines Note</h3>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Title</label>
+          <input type="text" name="admissions_info_title" class="form-control" value="{{ pages.admissions_info.title if pages.admissions_info else 'Admission Guidelines' }}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Content</label>
+          <textarea name="admissions_info_content" class="form-control" rows="3">{{ pages.admissions_info.content if pages.admissions_info else '' }}</textarea>
+        </div>
+      </div>
+
+      <div class="admin-card" style="margin-bottom:0;">
+        <div class="admin-card-header">
+          <h3 class="admin-card-title">💳 Fee Policy &amp; Concessions</h3>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Title</label>
+          <input type="text" name="fees_info_title" class="form-control" value="{{ pages.fees_info.title if pages.fees_info else 'Fee Policy' }}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Content</label>
+          <textarea name="fees_info_content" class="form-control" rows="3">{{ pages.fees_info.content if pages.fees_info else '' }}</textarea>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:right; margin-bottom:2rem;">
+      <button type="submit" class="btn btn-primary" style="padding:0.75rem 2.5rem; font-size:1rem;">
+        💾 Save All Page Changes
+      </button>
+    </div>
+  </form>
+
+{% endblock %}

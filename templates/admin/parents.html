@@ -1,0 +1,116 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Manage Parent Accounts | Admin Panel{% endblock %}
+
+{% block admin_content %}
+
+  <div class="admin-header">
+    <div>
+      <span class="section-subtitle">Parent Management</span>
+      <h1 class="admin-title">Parent Accounts &amp; Credentials</h1>
+    </div>
+    <a href="#add" class="btn btn-primary" onclick="document.getElementById('addParentForm').style.display='block'">
+      ➕ Create Parent Account
+    </a>
+  </div>
+
+  <!-- Create Parent Account Form -->
+  <div class="admin-card" id="addParentForm" style="display:none; border:2px solid var(--primary-border);">
+    <div class="admin-card-header">
+      <h3 class="admin-card-title">Create Parent Account</h3>
+      <button type="button" class="btn btn-sm btn-secondary" onclick="document.getElementById('addParentForm').style.display='none'">✕ Close</button>
+    </div>
+
+    <form method="POST" action="{{ url_for('admin.parents') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="action" value="create">
+
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:1rem;">
+        <div class="form-group">
+          <label class="form-label">Parent Mobile Number (Login ID) *</label>
+          <input type="tel" name="mobile" class="form-control" placeholder="e.g. 9876543210" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Parent / Guardian Full Name *</label>
+          <input type="text" name="full_name" class="form-control" placeholder="e.g. Md. Anwar Hossain" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Initial Password *</label>
+          <input type="password" name="password" class="form-control" placeholder="Enter initial password" required autocomplete="new-password">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email Address (Optional)</label>
+          <input type="email" name="email" class="form-control" placeholder="e.g. parent@gmail.com">
+        </div>
+      </div>
+
+      <div style="margin-top:1rem;">
+        <button type="submit" class="btn btn-primary">Create Account</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Parents List -->
+  <div class="admin-card" style="padding:0; overflow:hidden;">
+    <div style="padding:1rem 1.25rem; border-bottom:1px solid var(--border-light); display:flex; justify-content:space-between; align-items:center;">
+      <h3 style="font-size:1.1rem; color:var(--text-main); margin:0;">All Registered Parents</h3>
+      <span style="font-size:0.85rem; color:var(--text-muted); font-weight:700;">{{ parents|length }} Accounts</span>
+    </div>
+
+    {% if parents %}
+      <div class="table-responsive" style="margin-bottom:0;">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>Parent Name</th>
+              <th>Login Mobile</th>
+              <th>Linked Children</th>
+              <th>Created On</th>
+              <th style="text-align:right;">Password Reset</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in parents %}
+              <tr>
+                <td><strong>{{ p.full_name }}</strong></td>
+                <td>
+                  <span style="font-family:monospace; font-weight:700; color:var(--primary); font-size:0.95rem;">
+                    📱 {{ p.phone or p.username }}
+                  </span>
+                </td>
+                <td>
+                  {% if p.children_names %}
+                    <span style="font-size:0.85rem; color:var(--text-main);">{{ p.children_names }}</span>
+                  {% else %}
+                    <span class="badge badge-warning">No Wards Linked</span>
+                  {% endif %}
+                </td>
+                <td style="font-size:0.8rem; color:var(--text-muted);">{{ p.created_at[:10] }}</td>
+                <td style="text-align:right;">
+                  <!-- Reset Password Form -->
+                  <form method="POST" action="{{ url_for('admin.parents') }}" style="display:inline-flex; gap:0.35rem; align-items:center;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="action" value="reset_password">
+                    <input type="hidden" name="user_id" value="{{ p.id }}">
+                    <input type="password" name="new_password" placeholder="New pass" style="width:100px; padding:0.25rem 0.5rem; font-size:0.75rem; border:1px solid var(--border-light); border-radius:4px;" title="Enter new password" required autocomplete="new-password">
+                    <button type="submit" class="btn btn-sm btn-gold" style="padding:0.25rem 0.65rem; font-size:0.75rem;">
+                      Reset
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div style="padding:3rem 1.5rem; text-align:center; color:var(--text-muted);">
+        No parent accounts created yet.
+      </div>
+    {% endif %}
+  </div>
+
+{% endblock %}

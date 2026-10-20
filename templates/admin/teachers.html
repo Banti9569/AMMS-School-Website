@@ -1,0 +1,130 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Manage Faculty | Admin Panel{% endblock %}
+
+{% block admin_content %}
+
+  <div class="admin-header">
+    <div>
+      <span class="section-subtitle">Staff Directory</span>
+      <h1 class="admin-title">Teachers &amp; Faculty Members</h1>
+    </div>
+    <a href="#add" class="btn btn-primary" onclick="document.getElementById('addTeacherForm').style.display='block'">
+      ➕ Add New Teacher
+    </a>
+  </div>
+
+  <!-- Add Teacher Form -->
+  <div class="admin-card" id="addTeacherForm" style="display:none; border:2px solid var(--primary-border);">
+    <div class="admin-card-header">
+      <h3 class="admin-card-title">Add Teacher to Staff Directory</h3>
+      <button type="button" class="btn btn-sm btn-secondary" onclick="document.getElementById('addTeacherForm').style.display='none'">✕ Close</button>
+    </div>
+
+    <form method="POST" action="{{ url_for('admin.teachers') }}" enctype="multipart/form-data">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="action" value="add">
+
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:1rem;">
+        <div class="form-group">
+          <label class="form-label">Full Name &amp; Honorific *</label>
+          <input type="text" name="name" class="form-control" placeholder="e.g. Mr. Masudur Rahman" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Designation / Role *</label>
+          <input type="text" name="designation" class="form-control" placeholder="e.g. Assistant Teacher (English)" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Teacher Photo (Upload Image)</label>
+          <input type="file" name="photo" class="form-control" accept="image/png, image/jpeg, image/jpg, image/webp">
+          <small style="color:var(--text-muted); font-size:0.75rem;">JPG, PNG, or WEBP portrait</small>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Qualification *</label>
+          <input type="text" name="qualification" class="form-control" placeholder="e.g. M.A., B.Ed" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Primary Subject *</label>
+          <input type="text" name="subject" class="form-control" placeholder="e.g. English Literature" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Experience (Years)</label>
+          <input type="number" name="experience_years" class="form-control" value="3">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" name="email" class="form-control" placeholder="teacher@almajidmissionschool.edu.in">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Phone</label>
+          <input type="tel" name="phone" class="form-control" placeholder="e.g. 9832000000">
+        </div>
+
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label class="form-label">Brief Biography / Intro</label>
+          <textarea name="bio" class="form-control" rows="2" placeholder="Experience details, teaching ideology, etc."></textarea>
+        </div>
+      </div>
+
+      <div style="margin-top:1rem;">
+        <button type="submit" class="btn btn-primary">Save Teacher</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Teachers List Table -->
+  <div class="admin-card" style="padding:0; overflow:hidden;">
+    <div style="padding:1rem 1.25rem; border-bottom:1px solid var(--border-light); display:flex; justify-content:space-between; align-items:center;">
+      <h3 style="font-size:1.1rem; color:var(--text-main); margin:0;">Active Staff Members</h3>
+      <span style="font-size:0.85rem; color:var(--text-muted); font-weight:700;">{{ teachers|length }} Faculty</span>
+    </div>
+
+    {% if teachers %}
+      <div class="table-responsive" style="margin-bottom:0;">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th style="width:55px;">Photo</th>
+              <th>Teacher Name</th>
+              <th>Designation</th>
+              <th>Subject</th>
+              <th>Qualification</th>
+              <th>Experience</th>
+              <th style="text-align:right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for t in teachers %}
+              <tr>
+                <td>
+                  <img src="{{ t.photo_url }}" alt="{{ t.name }}" style="width:42px; height:42px; border-radius:50%; object-fit:cover; border:2px solid var(--border-light);" onerror="this.src='/static/images/staff/principal.jpg'">
+                </td>
+                <td><strong>{{ t.name }}</strong></td>
+                <td style="color:var(--primary); font-weight:600;">{{ t.designation }}</td>
+                <td>{{ t.subject }}</td>
+                <td>{{ t.qualification }}</td>
+                <td>{{ t.experience_years }}+ Yrs</td>
+                <td style="text-align:right;">
+                  <form method="POST" action="{{ url_for('admin.remove_teacher', teacher_id=t.id) }}" style="display:inline;" data-confirm="Remove this teacher from staff directory?">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-sm btn-danger" style="padding:0.25rem 0.65rem; font-size:0.75rem;">
+                      🗑️ Remove
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+  </div>
+
+{% endblock %}

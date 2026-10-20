@@ -1,0 +1,105 @@
+{% extends "parent/base_parent.html" %}
+
+{% block title %}Fee Status &amp; Receipts - {{ child.first_name }} | Parent Portal{% endblock %}
+
+{% block parent_content %}
+
+  <div class="card" style="margin-bottom:1.5rem; padding:1.5rem;">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem;">
+      <div>
+        <h2 style="font-size:1.35rem; color:var(--primary); margin-bottom:0.25rem;">Fee Status &amp; Receipts</h2>
+        <p style="font-size:0.875rem; color:var(--text-muted); margin:0;">
+          Billing ledger, payment status, and official receipts for {{ child.first_name }} {{ child.last_name }}
+        </p>
+      </div>
+      <button type="button" onclick="window.print()" class="btn btn-sm btn-secondary">
+        🖨️ Print Statement
+      </button>
+    </div>
+
+    <!-- Summary Numbers -->
+    <div class="stats-grid" style="margin-bottom:1.75rem;">
+      <div class="stat-card" style="border-left:4px solid var(--primary);">
+        <span class="stat-label">Total Invoiced</span>
+        <div class="stat-value" style="color:var(--text-main);">₹ {{ fees.total_fee|int }}</div>
+        <span style="font-size:0.75rem; color:var(--text-muted);">Session total</span>
+      </div>
+
+      <div class="stat-card" style="border-left:4px solid #16a34a;">
+        <span class="stat-label">Total Paid</span>
+        <div class="stat-value" style="color:#16a34a;">₹ {{ fees.total_paid|int }}</div>
+        <span style="font-size:0.75rem; color:var(--text-muted);">Received at counter/online</span>
+      </div>
+
+      <div class="stat-card" style="border-left:4px solid {% if fees.total_due > 0 %}#dc2626{% else %}#16a34a{% endif %};">
+        <span class="stat-label">Outstanding Balance</span>
+        <div class="stat-value" style="color:{% if fees.total_due > 0 %}#dc2626{% else %}#16a34a{% endif %};">
+          ₹ {{ fees.total_due|int }}
+        </div>
+        <span style="font-size:0.75rem; color:var(--text-muted);">
+          {% if fees.total_due > 0 %}Payment pending{% else %}All cleared{% endif %}
+        </span>
+      </div>
+
+      <div class="stat-card" style="border-left:4px solid var(--gold);">
+        <span class="stat-label">Pending Invoices</span>
+        <div class="stat-value" style="color:var(--gold);">{{ fees.pending_count }}</div>
+        <span style="font-size:0.75rem; color:var(--text-muted);">Vouchers due</span>
+      </div>
+    </div>
+
+    <!-- Fee Vouchers Table -->
+    {% if fees.records %}
+      <div class="table-responsive">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>Fee Description</th>
+              <th>Due Date</th>
+              <th>Amount</th>
+              <th>Paid</th>
+              <th>Status</th>
+              <th>Receipt / Method</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for f in fees.records %}
+              <tr>
+                <td><strong>{{ f.fee_title }}</strong></td>
+                <td>{{ f.due_date }}</td>
+                <td><strong>₹ {{ f.amount|int }}</strong></td>
+                <td style="color:#16a34a; font-weight:700;">₹ {{ f.paid_amount|int }}</td>
+                <td>
+                  <span class="badge {% if f.payment_status == 'Paid' %}badge-success{% elif f.payment_status == 'Partial' %}badge-warning{% else %}badge-danger{% endif %}">
+                    {{ f.payment_status }}
+                  </span>
+                </td>
+                <td style="font-size:0.85rem;">
+                  {% if f.receipt_no %}
+                    <span style="font-family:monospace; font-weight:700; color:var(--primary);">{{ f.receipt_no }}</span>
+                    <div style="font-size:0.75rem; color:var(--text-muted);">
+                      Paid on {{ f.payment_date }} ({{ f.payment_method or 'Cash' }})
+                    </div>
+                  {% else %}
+                    <span style="color:var(--text-muted);">Counter Payment Due</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div style="text-align:center; padding:2.5rem 1rem; color:var(--text-muted);">
+        No fee records created for this student yet.
+      </div>
+    {% endif %}
+
+    <!-- Payment Instructions -->
+    <div style="margin-top:1.5rem; background:var(--bg-muted); border-radius:var(--radius-sm); padding:1rem; font-size:0.85rem; color:var(--text-muted); line-height:1.5;">
+      <strong style="color:var(--text-main);">Payment Note:</strong> School fees can be deposited at the Al Majid Mission School Accounts Counter on all working days between 8:30 AM and 2:00 PM (Cash / UPI / Bank Transfer accepted). Please retain your official printed receipt.
+    </div>
+
+  </div>
+
+{% endblock %}

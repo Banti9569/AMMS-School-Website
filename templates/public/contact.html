@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}Contact &amp; Campus Location | Al Majid Mission School{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top:1.5rem; padding-bottom:3rem;">
+
+  <!-- Header -->
+  <div class="section-header">
+    <span class="section-subtitle">Get in Touch</span>
+    <h1 class="section-title">Contact &amp; Location Details</h1>
+    <p class="section-desc">
+      Have a question regarding admissions, campus visits, or student records? Reach out to our administrative desk.
+    </p>
+  </div>
+
+  <div style="display:grid; grid-template-columns: 1fr; gap:2rem; margin-bottom:3rem;">
+    
+    <!-- Contact Info + Form Grid -->
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:2rem;">
+      
+      <!-- Contact Information Cards -->
+      <div>
+        <div class="card" style="margin-bottom:1.25rem; padding:1.5rem; border-left:4px solid var(--primary);">
+          <div style="display:flex; gap:0.75rem; align-items:flex-start;">
+            <div style="font-size:1.5rem;">📍</div>
+            <div>
+              <h4 style="color:var(--primary); margin-bottom:0.25rem;">Campus Address</h4>
+              <p style="color:var(--text-muted); font-size:0.925rem; line-height:1.5;">
+                <strong>Al Majid Mission School</strong><br>
+                Vill &amp; P.O. Hazipur, PIN - 731245<br>
+                District Murshidabad / Birbhum Border<br>
+                West Bengal, India
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:1.25rem; padding:1.5rem; border-left:4px solid var(--gold);">
+          <div style="display:flex; gap:0.75rem; align-items:flex-start;">
+            <div style="font-size:1.5rem;">📞</div>
+            <div>
+              <h4 style="color:var(--primary); margin-bottom:0.25rem;">Phone Numbers</h4>
+              <p style="color:var(--text-muted); font-size:0.925rem; line-height:1.5;">
+                <strong>Administrative Office:</strong> <a href="tel:+919434056789">+91 94340 56789</a><br>
+                <strong>Admission Helpline:</strong> <a href="tel:+919876543210">+91 98765 43210</a>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:1.25rem; padding:1.5rem; border-left:4px solid #0284c7;">
+          <div style="display:flex; gap:0.75rem; align-items:flex-start;">
+            <div style="font-size:1.5rem;">✉️</div>
+            <div>
+              <h4 style="color:var(--primary); margin-bottom:0.25rem;">Email Addresses</h4>
+              <p style="color:var(--text-muted); font-size:0.925rem; line-height:1.5;">
+                <strong>General Queries:</strong> info@almajidmissionschool.edu.in<br>
+                <strong>Admissions Desk:</strong> admissions@almajidmissionschool.edu.in
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="padding:1.5rem; border-left:4px solid #16a34a;">
+          <div style="display:flex; gap:0.75rem; align-items:flex-start;">
+            <div style="font-size:1.5rem;">⏰</div>
+            <div>
+              <h4 style="color:var(--primary); margin-bottom:0.25rem;">Visiting Hours</h4>
+              <p style="color:var(--text-muted); font-size:0.925rem; line-height:1.5;">
+                <strong>Monday to Thursday &amp; Saturday:</strong> 8:00 AM – 3:30 PM<br>
+                <strong>Friday:</strong> 8:00 AM – 12:00 PM<br>
+                <strong>Sunday:</strong> Closed (Weekly Holiday)
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Working Contact / Inquiry Form -->
+      <div class="card" style="padding:2rem;">
+        <h3 style="color:var(--primary); font-size:1.35rem; margin-bottom:0.5rem;">Send Us an Inquiry</h3>
+        <p style="color:var(--text-muted); font-size:0.875rem; margin-bottom:1.5rem;">
+          Fill out the details below and our administrative office will reply or phone you within 24 hours.
+        </p>
+
+        <form method="POST" action="{{ url_for('public.contact') }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+          <div class="form-group">
+            <label class="form-label" for="c_name">Full Name *</label>
+            <input type="text" id="c_name" name="name" class="form-control" placeholder="e.g. Jahangir Kabir" required value="{{ form_data.name if form_data else '' }}">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="c_phone">Phone / WhatsApp Number *</label>
+            <input type="tel" id="c_phone" name="phone" class="form-control" placeholder="e.g. 9832012345" required value="{{ form_data.phone if form_data else '' }}">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="c_email">Email Address (Optional)</label>
+            <input type="email" id="c_email" name="email" class="form-control" placeholder="e.g. example@gmail.com" value="{{ form_data.email if form_data else '' }}">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="c_subject">Inquiry Subject</label>
+            <select id="c_subject" name="subject" class="form-select">
+              <option value="Admission Inquiry for Session 2026-27">Admission Inquiry for Session 2026-27</option>
+              <option value="Fee Structure &amp; Concessions">Fee Structure &amp; Concessions</option>
+              <option value="School Bus &amp; Transportation Route">School Bus &amp; Transportation Route</option>
+              <option value="Teacher Recruitment / Job Application">Teacher Recruitment / Job Application</option>
+              <option value="General Information">General Information</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="c_message">Message / Questions *</label>
+            <textarea id="c_message" name="message" class="form-control" rows="4" placeholder="Please write your questions or student details here..." required>{{ form_data.message if form_data else '' }}</textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block" style="padding:0.85rem;">
+            ✉️ Submit Inquiry Now
+          </button>
+        </form>
+      </div>
+
+    </div>
+
+    <!-- Google Map Embed -->
+    <div class="card" style="padding:1.5rem; overflow:hidden;">
+      <h3 style="color:var(--primary); font-size:1.25rem; margin-bottom:1rem;">Campus Map &amp; Directions</h3>
+      <div style="width:100%; height:380px; border-radius:var(--radius-sm); overflow:hidden; border:1px solid var(--border-light);">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d58434.78768006423!2d87.8931135!3d23.9472314!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39f99371dc14115d%3A0x88981f727653245!2sHazipur%2C%20West%20Bengal%20731245!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
+          width="100%"
+          height="100%"
+          style="border:0;"
+          allowfullscreen=""
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          title="Al Majid Mission School Hazipur Google Map">
+        </iframe>
+      </div>
+      <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.75rem;">
+        Easily accessible by local transport from Hazipur Bus Stand and railway junctions.
+      </p>
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

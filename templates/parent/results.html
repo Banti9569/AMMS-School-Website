@@ -1,0 +1,101 @@
+{% extends "parent/base_parent.html" %}
+
+{% block title %}Examination Results - {{ child.first_name }} | Parent Portal{% endblock %}
+
+{% block parent_content %}
+
+  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem;">
+    <div>
+      <h2 style="font-size:1.35rem; color:var(--primary); margin-bottom:0.25rem;">Academic Report Cards</h2>
+      <p style="font-size:0.875rem; color:var(--text-muted); margin:0;">
+        Continuous comprehensive evaluation for {{ child.first_name }} {{ child.last_name }} ({{ child.class_name }})
+      </p>
+    </div>
+    <button type="button" onclick="window.print()" class="btn btn-sm btn-secondary" style="display:inline-flex; align-items:center; gap:0.4rem;">
+      🖨️ Print Mark Sheet
+    </button>
+  </div>
+
+  {% if exams %}
+    {% for exam in exams %}
+      <div class="report-card">
+        
+        <!-- School Crest & Header inside Report Card -->
+        <div class="report-header">
+          <div style="display:flex; align-items:center; justify-content:center; gap:0.75rem; margin-bottom:0.5rem;">
+            <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="Logo" width="38" height="38">
+            <h3 style="color:var(--primary); font-size:1.25rem; margin:0;">Al Majid Mission School</h3>
+          </div>
+          <div style="font-size:0.825rem; color:var(--text-muted); margin-bottom:0.5rem;">Hazipur, West Bengal - 731245 &bull; Affiliated Syllabus</div>
+          <h4 style="font-size:1.1rem; color:var(--text-main); font-weight:800; text-transform:uppercase; letter-spacing:0.04em;">
+            {{ exam.exam_name }}
+          </h4>
+        </div>
+
+        <!-- Student Meta Row -->
+        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.75rem; background:var(--bg-muted); border-radius:var(--radius-sm); padding:0.75rem 1rem; margin-bottom:1.25rem; font-size:0.875rem;">
+          <div>Student Name: <strong>{{ child.first_name }} {{ child.last_name }}</strong></div>
+          <div>Class: <strong>{{ exam.class_name }} ({{ child.section }})</strong></div>
+          <div>Roll No: <strong>#{{ child.roll_no }}</strong></div>
+          <div>Admission No: <strong>{{ child.admission_no }}</strong></div>
+        </div>
+
+        <!-- Marks Table -->
+        <div class="table-responsive">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Subject</th>
+                <th>Marks Obtained</th>
+                <th>Full Marks</th>
+                <th>Grade</th>
+                <th>Teacher Remarks</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for sub in exam.subjects %}
+                <tr>
+                  <td><strong>{{ sub.subject }}</strong></td>
+                  <td><span style="font-size:1rem; font-weight:800; color:var(--primary);">{{ sub.marks_obtained|int }}</span></td>
+                  <td>{{ sub.max_marks|int }}</td>
+                  <td><span class="grade-pill grade-{{ sub.grade }}">{{ sub.grade }}</span></td>
+                  <td style="color:var(--text-muted); font-size:0.85rem;">{{ sub.remarks or 'Satisfactory work' }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+            <tfoot>
+              <tr style="background:var(--primary-lightest); font-weight:800; font-size:1rem;">
+                <td>Grand Total</td>
+                <td style="color:var(--primary);">{{ exam.total_obtained|int }}</td>
+                <td>{{ exam.total_max|int }}</td>
+                <td colspan="2">
+                  Percentage: <span style="color:var(--primary);">{{ exam.percentage }}%</span> &bull; Overall: <span class="badge badge-success">{{ exam.overall_grade }}</span>
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="card" style="text-align:center; padding:3rem 1.5rem;">
+      <p style="color:var(--text-muted); font-size:1rem; margin-bottom:0.5rem;">No examination results have been published for this student yet.</p>
+      <span style="font-size:0.85rem; color:var(--text-muted);">Please check back after term examinations conclude.</span>
+    </div>
+  {% endif %}
+
+  <!-- Grading Legend -->
+  <div class="card" style="padding:1.25rem; margin-top:1.5rem;">
+    <h4 style="font-size:0.95rem; color:var(--text-main); margin-bottom:0.75rem;">Grading System Reference:</h4>
+    <div style="display:flex; flex-wrap:wrap; gap:0.5rem; font-size:0.8rem;">
+      <span class="grade-pill grade-AA">AA: 90-100% (Outstanding)</span>
+      <span class="grade-pill grade-A+">A+: 80-89% (Excellent)</span>
+      <span class="grade-pill grade-A">A: 70-79% (Very Good)</span>
+      <span class="grade-pill grade-B">B+: 60-69% (Good)</span>
+      <span class="grade-pill grade-B">B: 50-59% (Satisfactory)</span>
+      <span class="grade-pill grade-C">C: Below 50%</span>
+    </div>
+  </div>
+
+{% endblock %}

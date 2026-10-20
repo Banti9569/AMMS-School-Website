@@ -1,0 +1,159 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Enter Student Results | Admin Panel{% endblock %}
+
+{% block admin_content %}
+
+  <div class="admin-header">
+    <div>
+      <span class="section-subtitle">Academic Evaluation</span>
+      <h1 class="admin-title">Exam Marks &amp; Results Entry</h1>
+    </div>
+  </div>
+
+  <!-- Student Selector Filter -->
+  <div class="admin-card" style="margin-bottom:1.5rem; padding:1.25rem;">
+    <form method="GET" action="{{ url_for('admin.results') }}" style="display:flex; flex-wrap:wrap; gap:1rem; align-items:flex-end;">
+      <div class="form-group" style="margin-bottom:0; min-width:180px;">
+        <label class="form-label">1. Select Class</label>
+        <select name="class_name" class="form-select auto-submit-filter">
+          {% for c in classes %}
+            <option value="{{ c }}" {% if selected_class == c %}selected{% endif %}>{{ c }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group" style="margin-bottom:0; min-width:220px; flex-grow:1;">
+        <label class="form-label">2. Select Student</label>
+        <select name="student_id" class="form-select auto-submit-filter">
+          <option value="">-- Choose Student --</option>
+          {% for s in students %}
+            <option value="{{ s.id }}" {% if selected_student and selected_student.id == s.id %}selected{% endif %}>
+              Roll #{{ s.roll_no }} - {{ s.first_name }} {{ s.last_name }} ({{ s.admission_no }})
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="padding:0.65rem 1.25rem;">
+        Load Student Marks
+      </button>
+    </form>
+  </div>
+
+  {% if selected_student %}
+    <!-- Add Mark Entry Form -->
+    <div class="admin-card" style="margin-bottom:1.5rem; border:2px solid var(--primary-border);">
+      <div class="admin-card-header">
+        <h3 class="admin-card-title">
+          Add Subject Mark for {{ selected_student.first_name }} {{ selected_student.last_name }} ({{ selected_student.class_name }})
+        </h3>
+      </div>
+
+      <form method="POST" action="{{ url_for('admin.results', class_name=selected_class) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="action" value="add">
+        <input type="hidden" name="student_id" value="{{ selected_student.id }}">
+
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:1rem;">
+          <div class="form-group">
+            <label class="form-label">Examination Name *</label>
+            <input type="text" name="exam_name" class="form-control" value="Mid-Term Exam 2026" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Subject *</label>
+            <input type="text" name="subject" class="form-control" placeholder="e.g. Mathematics, Physical Science" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Marks Obtained *</label>
+            <input type="number" step="0.5" name="marks_obtained" class="form-control" placeholder="e.g. 88" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Full / Maximum Marks</label>
+            <input type="number" step="0.5" name="max_marks" class="form-control" value="100" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Grade (Optional - Auto calculated)</label>
+            <input type="text" name="grade" class="form-control" placeholder="e.g. AA, A+, A">
+          </div>
+
+          <div class="form-group" style="grid-column: 1 / -1;">
+            <label class="form-label">Teacher Remark (Optional)</label>
+            <input type="text" name="remarks" class="form-control" placeholder="e.g. Excellent conceptual clarity, good geometry drawing">
+          </div>
+        </div>
+
+        <div style="margin-top:1rem;">
+          <button type="submit" class="btn btn-primary">Save Mark Entry</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Existing Records -->
+    {% if student_results %}
+      {% for exam in student_results %}
+        <div class="admin-card" style="margin-bottom:1.5rem;">
+          <div class="admin-card-header">
+            <div>
+              <h3 class="admin-card-title">{{ exam.exam_name }}</h3>
+              <span style="font-size:0.8rem; color:var(--text-muted);">
+                Total: <strong>{{ exam.total_obtained|int }} / {{ exam.total_max|int }}</strong> &bull; Percentage: <strong>{{ exam.percentage }}%</strong> &bull; Grade: <span class="badge badge-success">{{ exam.overall_grade }}</span>
+              </span>
+            </div>
+          </div>
+
+          <div class="table-responsive" style="margin-bottom:0;">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>Subject</th>
+                  <th>Marks Obtained</th>
+                  <th>Full Marks</th>
+                  <th>Grade</th>
+                  <th>Remarks</th>
+                  <th style="text-align:right;">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for sub in exam.subjects %}
+                  <tr>
+                    <td><strong>{{ sub.subject }}</strong></td>
+                    <td style="color:var(--primary); font-weight:800;">{{ sub.marks_obtained|int }}</td>
+                    <td>{{ sub.max_marks|int }}</td>
+                    <td><span class="grade-pill grade-{{ sub.grade }}">{{ sub.grade }}</span></td>
+                    <td style="font-size:0.85rem; color:var(--text-muted);">{{ sub.remarks or '-' }}</td>
+                    <td style="text-align:right;">
+                      <form method="POST" action="{{ url_for('admin.results', class_name=selected_class) }}" style="display:inline;" data-confirm="Delete this mark entry?">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="action" value="delete">
+                        <input type="hidden" name="result_id" value="{{ sub.id }}">
+                        <button type="submit" class="btn btn-sm btn-danger" style="padding:0.2rem 0.5rem; font-size:0.75rem;">
+                          🗑️
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="admin-card" style="text-align:center; padding:2rem; color:var(--text-muted);">
+        No results entered for this student yet. Use the form above to add subject marks.
+      </div>
+    {% endif %}
+
+  {% else %}
+    <div class="admin-card" style="text-align:center; padding:3rem 1.5rem; color:var(--text-muted);">
+      <p style="font-size:1.1rem; margin-bottom:0.5rem;">Please select a class and student from the dropdown above.</p>
+      <span>You can enter individual subject marks, total exam scores, and qualitative remarks.</span>
+    </div>
+  {% endif %}
+
+{% endblock %}

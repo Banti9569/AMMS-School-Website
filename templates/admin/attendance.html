@@ -1,0 +1,111 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Daily Attendance Entry | Admin Panel{% endblock %}
+
+{% block admin_content %}
+
+  <div class="admin-header">
+    <div>
+      <span class="section-subtitle">Student Roll-Call</span>
+      <h1 class="admin-title">Class Attendance Entry</h1>
+    </div>
+  </div>
+
+  <!-- Class & Date Selector Form -->
+  <div class="admin-card" style="margin-bottom:1.5rem; padding:1.25rem;">
+    <form method="GET" action="{{ url_for('admin.attendance') }}" style="display:flex; flex-wrap:wrap; gap:1rem; align-items:flex-end;">
+      <div class="form-group" style="margin-bottom:0; min-width:180px;">
+        <label class="form-label">Select Class</label>
+        <select name="class_name" class="form-select auto-submit-filter">
+          {% for c in classes %}
+            <option value="{{ c }}" {% if selected_class == c %}selected{% endif %}>{{ c }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group" style="margin-bottom:0; min-width:160px;">
+        <label class="form-label">Attendance Date</label>
+        <input type="date" name="date" class="form-control auto-submit-filter" value="{{ selected_date }}">
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="padding:0.65rem 1.25rem;">
+        Load Class Sheet
+      </button>
+
+      <button type="button" id="markAllPresentBtn" class="btn btn-secondary" style="margin-left:auto;">
+        ✅ Mark All Present
+      </button>
+    </form>
+  </div>
+
+  <!-- Attendance Sheet Form -->
+  <div class="admin-card" style="padding:0; overflow:hidden;">
+    <div style="padding:1rem 1.25rem; border-bottom:1px solid var(--border-light); display:flex; justify-content:space-between; align-items:center;">
+      <div>
+        <h3 style="font-size:1.1rem; color:var(--text-main); margin:0;">
+          Roll-Call: <strong>{{ selected_class }}</strong> &bull; Date: <strong>{{ selected_date }}</strong>
+        </h3>
+      </div>
+      <span style="font-size:0.85rem; color:var(--text-muted); font-weight:700;">
+        {{ sheet|length }} Students
+      </span>
+    </div>
+
+    {% if sheet %}
+      <form method="POST" action="{{ url_for('admin.attendance') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="class_name" value="{{ selected_class }}">
+        <input type="hidden" name="attendance_date" value="{{ selected_date }}">
+
+        <div class="table-responsive" style="margin-bottom:0;">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th style="width:70px;">Roll</th>
+                <th>Admission #</th>
+                <th>Student Name</th>
+                <th style="text-align:center; width:220px;">Status</th>
+                <th>Daily Remark (Optional)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for s in sheet %}
+                <tr>
+                  <td><strong>#{{ s.roll_no }}</strong></td>
+                  <td>{{ s.admission_no }}</td>
+                  <td><strong>{{ s.first_name }} {{ s.last_name }}</strong></td>
+                  <td style="text-align:center;">
+                    <div class="attendance-toggle">
+                      <input type="radio" id="p_{{ s.student_id }}" name="status_{{ s.student_id }}" value="Present" {% if s.status == 'Present' or not s.status %}checked{% endif %}>
+                      <label for="p_{{ s.student_id }}" class="p" title="Present">P</label>
+
+                      <input type="radio" id="a_{{ s.student_id }}" name="status_{{ s.student_id }}" value="Absent" {% if s.status == 'Absent' %}checked{% endif %}>
+                      <label for="a_{{ s.student_id }}" class="a" title="Absent">A</label>
+
+                      <input type="radio" id="l_{{ s.student_id }}" name="status_{{ s.student_id }}" value="Late" {% if s.status == 'Late' %}checked{% endif %}>
+                      <label for="l_{{ s.student_id }}" class="l" title="Late">L</label>
+                    </div>
+                  </td>
+                  <td>
+                    <input type="text" name="remarks_{{ s.student_id }}" value="{{ s.remarks or '' }}" placeholder="e.g. Fever, Traffic delay" class="form-control" style="padding:0.35rem 0.65rem; font-size:0.85rem;">
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <div style="padding:1.25rem; border-top:1px solid var(--border-light); background:var(--bg-surface); text-align:right;">
+          <button type="submit" class="btn btn-primary" style="padding:0.75rem 2rem; font-size:1rem;">
+            💾 Save Attendance Sheet
+          </button>
+        </div>
+      </form>
+    {% else %}
+      <div style="padding:3rem 1.5rem; text-align:center; color:var(--text-muted);">
+        No students currently enrolled in {{ selected_class }}.
+      </div>
+    {% endif %}
+  </div>
+
+{% endblock %}

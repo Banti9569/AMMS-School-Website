@@ -1,0 +1,124 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Admin Dashboard | Al Majid Mission School{% endblock %}
+
+{% block admin_content %}
+
+  <div class="admin-header">
+    <div>
+      <span class="section-subtitle">System Overview</span>
+      <h1 class="admin-title">Administrator Dashboard</h1>
+    </div>
+    <div style="font-size:0.875rem; color:var(--text-muted);">
+      Logged in as <strong>{{ session.get('full_name', 'Administrator') }}</strong>
+    </div>
+  </div>
+
+  <!-- Stats Grid -->
+  <div class="stats-grid" style="margin-bottom:2rem;">
+    <a href="{{ url_for('admin.students') }}" class="stat-card" style="text-decoration:none; border-left:4px solid var(--primary);">
+      <span class="stat-label">Total Students</span>
+      <div class="stat-value">{{ counts.total_students }}</div>
+      <span style="font-size:0.75rem; color:var(--text-muted);">Manage enrollments &rarr;</span>
+    </a>
+
+    <a href="{{ url_for('admin.parents') }}" class="stat-card" style="text-decoration:none; border-left:4px solid #0284c7;">
+      <span class="stat-label">Parent Accounts</span>
+      <div class="stat-value" style="color:#0284c7;">{{ counts.total_parents }}</div>
+      <span style="font-size:0.75rem; color:var(--text-muted);">Mobile logins &amp; reset &rarr;</span>
+    </a>
+
+    <a href="{{ url_for('admin.teachers') }}" class="stat-card" style="text-decoration:none; border-left:4px solid #8b5cf6;">
+      <span class="stat-label">Faculty &amp; Staff</span>
+      <div class="stat-value" style="color:#8b5cf6;">{{ counts.total_teachers }}</div>
+      <span style="font-size:0.75rem; color:var(--text-muted);">Staff directory &rarr;</span>
+    </a>
+
+    <a href="{{ url_for('admin.fees') }}" class="stat-card" style="text-decoration:none; border-left:4px solid #dc2626;">
+      <span class="stat-label">Pending Fee Invoices</span>
+      <div class="stat-value" style="color:#dc2626;">{{ counts.pending_fees }}</div>
+      <span style="font-size:0.75rem; color:var(--text-muted);">Receive payment &rarr;</span>
+    </a>
+
+    <a href="{{ url_for('admin.messages') }}" class="stat-card" style="text-decoration:none; border-left:4px solid var(--gold);">
+      <span class="stat-label">Unread Inquiries</span>
+      <div class="stat-value" style="color:var(--gold);">{{ counts.unread_messages }}</div>
+      <span style="font-size:0.75rem; color:var(--text-muted);">Public contact forms &rarr;</span>
+    </a>
+
+    <a href="{{ url_for('admin.notices') }}" class="stat-card" style="text-decoration:none; border-left:4px solid #10b981;">
+      <span class="stat-label">Published Notices</span>
+      <div class="stat-value" style="color:#10b981;">{{ counts.total_notices }}</div>
+      <span style="font-size:0.75rem; color:var(--text-muted);">Post new update &rarr;</span>
+    </a>
+  </div>
+
+  <!-- Quick Action Shortcuts -->
+  <div class="admin-card" style="margin-bottom:2rem;">
+    <h3 style="font-size:1.1rem; color:var(--text-main); margin-bottom:1rem;">⚡ Quick Operations</h3>
+    <div style="display:flex; flex-wrap:wrap; gap:0.75rem;">
+      <a href="{{ url_for('admin.students') }}#add" class="btn btn-sm btn-primary">➕ Add New Student</a>
+      <a href="{{ url_for('admin.parents') }}#add" class="btn btn-sm btn-secondary">👤 Create Parent Account</a>
+      <a href="{{ url_for('admin.attendance') }}" class="btn btn-sm btn-primary">📅 Take Class Attendance</a>
+      <a href="{{ url_for('admin.results') }}" class="btn btn-sm btn-secondary">📝 Enter Exam Marks</a>
+      <a href="{{ url_for('admin.fees') }}" class="btn btn-sm btn-primary">💳 Record Fee Payment</a>
+      <a href="{{ url_for('admin.notices') }}#add" class="btn btn-sm btn-secondary">📢 Publish Notice</a>
+      <a href="{{ url_for('admin.pages') }}" class="btn btn-sm btn-secondary">✏️ Edit Website Pages</a>
+    </div>
+  </div>
+
+  <!-- 2-Column: Recent Inquiries & Recent Notices -->
+  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:1.5rem;">
+    
+    <!-- Recent Inquiries -->
+    <div class="admin-card">
+      <div class="admin-card-header">
+        <h3 class="admin-card-title">Recent Contact Inquiries</h3>
+        <a href="{{ url_for('admin.messages') }}" style="font-size:0.8rem; font-weight:700;">View Inbox &rarr;</a>
+      </div>
+
+      {% if recent_messages %}
+        <div style="display:flex; flex-direction:column; gap:0.75rem;">
+          {% for m in recent_messages %}
+            <div style="padding:0.75rem; background:var(--bg-muted); border-radius:var(--radius-sm); border-left:3px solid {% if not m.is_read %}var(--gold){% else %}var(--border-light){% endif %};">
+              <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-muted); margin-bottom:0.25rem;">
+                <strong>{{ m.name }} ({{ m.phone }})</strong>
+                <span>{{ m.created_at[:10] }}</span>
+              </div>
+              <div style="font-size:0.875rem; font-weight:700; color:var(--text-main); margin-bottom:0.25rem;">{{ m.subject }}</div>
+              <p style="font-size:0.825rem; color:var(--text-muted); margin:0;">{{ m.message[:90] }}...</p>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p style="color:var(--text-muted); font-size:0.85rem; text-align:center; padding:1.5rem 0;">No inquiries received yet.</p>
+      {% endif %}
+    </div>
+
+    <!-- Recent Notices -->
+    <div class="admin-card">
+      <div class="admin-card-header">
+        <h3 class="admin-card-title">Current Active Notices</h3>
+        <a href="{{ url_for('admin.notices') }}" style="font-size:0.8rem; font-weight:700;">Manage All &rarr;</a>
+      </div>
+
+      {% if recent_notices %}
+        <div style="display:flex; flex-direction:column; gap:0.75rem;">
+          {% for n in recent_notices %}
+            <div style="padding:0.75rem; background:var(--bg-muted); border-radius:var(--radius-sm);">
+              <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-muted); margin-bottom:0.25rem;">
+                <span class="badge badge-primary">{{ n.category }}</span>
+                <span>📅 {{ n.published_date }}</span>
+              </div>
+              <h4 style="font-size:0.9rem; margin:0.25rem 0; color:var(--text-main);">{{ n.title }}</h4>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p style="color:var(--text-muted); font-size:0.85rem; text-align:center; padding:1.5rem 0;">No notices published.</p>
+      {% endif %}
+    </div>
+
+  </div>
+
+{% endblock %}

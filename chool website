@@ -1,0 +1,61 @@
+[35m.env.example[m[36m:[m[32m10[m[36m:[m[1;31mSECRET_KEY[m=generate_your_secure_[1;31msecret_key[m_here
+[35mREADME.md[m[36m:[m[32m19[m[36m:[m### 2. Parent Portal (Login with Mobile Number + [1;31mPassword[m)
+[35mREADME.md[m[36m:[m[32m31[m[36m:[m- **Parent Accounts**: Create parent login accounts by mobile number and instantly reset [1;31mpassword[ms.
+[35mREADME.md[m[36m:[m[32m43[m[36m:[m- **[1;31mPassword[m Hashing**: Secure [1;31mpassword[m encryption via `werkzeug.security` (scrypt / pbkdf2).
+[35mREADME.md[m[36m:[m[32m44[m[36m:[m- **Session-Bound CSRF Protection**: Every state-changing form submission is strictly validated with cryptographically secure [1;31mtoken[ms.
+[35mREADME.md[m[36m:[m[32m78[m[36m:[m│   │   ├── style.css          # Green & white theme, HSL [1;31mtoken[ms, dark mode, mobile drawer
+[35mREADME.md[m[36m:[m[32m96[m[36m:[m    ├── auth/                  # Login and [1;31mpassword[m assistance templates
+[35mREADME.md[m[36m:[m[32m118[m[36m:[m[1;31mSECRET_KEY[m=your_secure_[1;31msecret_key[m
+[35mREADME.md[m[36m:[m[32m149[m[36m:[m> Frontend pages do not expose default [1;31mpassword[ms for privacy and security. The following seeded credentials can be used for initial setup and verification:
+[35mREADME.md[m[36m:[m[32m151[m[36m:[m| Portal | Identifier | Initial [1;31mPassword[m | Notes |
+[35mREADME.md[m[36m:[m[32m153[m[36m:[m| **Parent Portal** | `[1;31m9876543210[m` | `[1;31mparent123[m` | Linked to student Samiul Haque (Class VIII-A) |
+[35mREADME.md[m[36m:[m[32m154[m[36m:[m| **Parent Portal (2 Wards)** | `9876543211` | `[1;31mparent123[m` | Linked to Ayesha Khatun (Class V-B) & Farhan Akhtar (Class IX-A) |
+[35mREADME.md[m[36m:[m[32m155[m[36m:[m| **Admin Console** | `admin` | `[1;31madmin123[m` | Full access to all management modules & CMS |
+[35mREADME.md[m[36m:[m[32m157[m[36m:[m*[1;31mPassword[ms can be changed or reset at any time by the administrator from the Admin Console.*
+[35mapp.py[m[36m:[m[32m5[m[36m:[mfrom security import generate_csrf_[1;31mtoken[m, validate_csrf
+[35mapp.py[m[36m:[m[32m37[m[36m:[m            flash('Your session or security [1;31mtoken[m expired. Please try submitting again.', 'danger')
+[35mapp.py[m[36m:[m[32m40[m[36m:[m    # Inject global variables & CSRF [1;31mtoken[m to all templates
+[35mapp.py[m[36m:[m[32m44[m[36m:[m            'csrf_[1;31mtoken[m': generate_csrf_[1;31mtoken[m,
+[35mauth.py[m[36m:[m[32m2[m[36m:[mfrom db_helpers import authenticate_user, get_user_by_id, reset_user_[1;31mpassword[m
+[35mauth.py[m[36m:[m[32m19[m[36m:[m        [1;31mpassword[m = request.form.get('[1;31mpassword[m', '').strip()
+[35mauth.py[m[36m:[m[32m21[m[36m:[m        if not username or not [1;31mpassword[m:
+[35mauth.py[m[36m:[m[32m22[m[36m:[m            flash('Please enter both your identifier and [1;31mpassword[m.', 'warning')
+[35mauth.py[m[36m:[m[32m25[m[36m:[m        user = authenticate_user(username, [1;31mpassword[m)
+[35mauth.py[m[36m:[m[32m49[m[36m:[m            flash('Invalid login credentials. Please check your mobile number or username and [1;31mpassword[m.', 'danger')
+[35mauth.py[m[36m:[m[32m60[m[36m:[m@auth_bp.route('/reset-[1;31mpassword[m-request', methods=['GET', 'POST'])
+[35mauth.py[m[36m:[m[32m61[m[36m:[mdef reset_[1;31mpassword[m_request():
+[35mauth.py[m[36m:[m[32m64[m[36m:[m        flash('[1;31mPassword[m reset request received. For safety and child privacy, school administration will verify your registered phone and send an SMS or assist you directly.', 'info')
+[35mauth.py[m[36m:[m[32m66[m[36m:[m    return render_template('auth/reset_[1;31mpassword[m.html')
+[35mconfig.py[m[36m:[m[32m14[m[36m:[m    [1;31mSECRET_KEY[m = os.environ.get('[1;31mSECRET_KEY[m', 'al-majid-mission-school-secure-key-2026-hazipur')
+[35mdb_helpers.py[m[36m:[m[32m2[m[36m:[mfrom werkzeug.security import generate_[1;31mpassword[m_hash, check_[1;31mpassword[m_hash
+[35mdb_helpers.py[m[36m:[m[32m7[m[36m:[mdef authenticate_user(username, [1;31mpassword[m):
+[35mdb_helpers.py[m[36m:[m[32m14[m[36m:[m    if user and check_[1;31mpassword[m_hash(user['[1;31mpassword[m_hash'], [1;31mpassword[m):
+[35mdb_helpers.py[m[36m:[m[32m43[m[36m:[mdef create_parent_user(mobile, full_name, [1;31mpassword[m="[1;31mPassword[m@123", email=None):
+[35mdb_helpers.py[m[36m:[m[32m46[m[36m:[m    [1;31mpassword[m_hash = generate_[1;31mpassword[m_hash([1;31mpassword[m)
+[35mdb_helpers.py[m[36m:[m[32m49[m[36m:[m        INSERT INTO users (role, username, [1;31mpassword[m_hash, full_name, email, phone)
+[35mdb_helpers.py[m[36m:[m[32m51[m[36m:[m        """, (mobile.strip(), [1;31mpassword[m_hash, full_name.strip(), email.strip() if email else None, mobile.strip()))
+[35mdb_helpers.py[m[36m:[m[32m60[m[36m:[mdef reset_user_[1;31mpassword[m(user_id, new_[1;31mpassword[m):
+[35mdb_helpers.py[m[36m:[m[32m63[m[36m:[m    [1;31mpassword[m_hash = generate_[1;31mpassword[m_hash(new_[1;31mpassword[m)
+[35mdb_helpers.py[m[36m:[m[32m64[m[36m:[m    cursor.execute("UPDATE users SET [1;31mpassword[m_hash = ? WHERE id = ?", ([1;31mpassword[m_hash, user_id))
+[35mmodels.py[m[36m:[m[32m4[m[36m:[mfrom werkzeug.security import generate_[1;31mpassword[m_hash
+[35mmodels.py[m[36m:[m[32m24[m[36m:[m        [1;31mpassword[m_hash TEXT NOT NULL,
+[35mmodels.py[m[36m:[m[32m198[m[36m:[m        admin_pass = generate_[1;31mpassword[m_hash("[1;31madmin123[m")
+[35mmodels.py[m[36m:[m[32m200[m[36m:[m        INSERT INTO users (role, username, [1;31mpassword[m_hash, full_name, email, phone)
+[35mmodels.py[m[36m:[m[32m205[m[36m:[m        parent_pass = generate_[1;31mpassword[m_hash("[1;31mparent123[m")
+[35mmodels.py[m[36m:[m[32m207[m[36m:[m        INSERT INTO users (role, username, [1;31mpassword[m_hash, full_name, email, phone)
+[35mmodels.py[m[36m:[m[32m209[m[36m:[m        ('parent', '[1;31m9876543210[m', ?, 'Md. Rafiqul Islam', 'rafiqul.islam@gmail.com', '[1;31m9876543210[m'),
+[35mmodels.py[m[36m:[m[32m222[m[36m:[m        ('AMMS-2024-081', 12, 'Samiul', 'Haque', 'Class VIII', 'A', '2012-04-15', 'Male', 'O+', ?, 'Hazipur Purba Para, Hazipur, 731245', '[1;31m9876543210[m', '/static/images/school/students_reading.jpg'),
+[35mroutes/admin.py[m[36m:[m[32m9[m[36m:[m    get_all_parents, create_parent_user, reset_user_[1;31mpassword[m,
+[35mroutes/admin.py[m[36m:[m[32m137[m[36m:[m            [1;31mpassword[m = request.form.get('[1;31mpassword[m', '').strip()
+[35mroutes/admin.py[m[36m:[m[32m142[m[36m:[m            elif not [1;31mpassword[m:
+[35mroutes/admin.py[m[36m:[m[32m143[m[36m:[m                flash('Initial [1;31mpassword[m is required to create a parent account.', 'warning')
+[35mroutes/admin.py[m[36m:[m[32m145[m[36m:[m                uid, err = create_parent_user(mobile, name, [1;31mpassword[m, email)
+[35mroutes/admin.py[m[36m:[m[32m150[m[36m:[m        elif action == 'reset_[1;31mpassword[m':
+[35mroutes/admin.py[m[36m:[m[32m152[m[36m:[m            new_pass = request.form.get('new_[1;31mpassword[m', '').strip()
+[35mroutes/admin.py[m[36m:[m[32m154[m[36m:[m                flash('Please enter a new [1;31mpassword[m to reset.', 'warning')
+[35mroutes/admin.py[m[36m:[m[32m156[m[36m:[m                reset_user_[1;31mpassword[m(int(user_id), new_pass)
+[35mroutes/admin.py[m[36m:[m[32m157[m[36m:[m                flash('Parent [1;31mpassword[m has been reset successfully.', 'success')
+[35msecurity.py[m[36m:[m[32m5[m[36m:[mdef generate_csrf_[1;31mtoken[m():
+[35msecurity.py[m[36m:[m[32m6[m[36m:[m    if '_csrf_[1;31mtoken[m' not in session:
+[35msecurity.py[m[36m:[m[32m7[m[36m:[m        session['_csrf_[1;31mtoken[m'] = secrets.[1;31mtoken[m_hex(24)
+[35msecurity.py[m[36m:[m[32m8

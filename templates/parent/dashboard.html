@@ -1,0 +1,198 @@
+{% extends "parent/base_parent.html" %}
+
+{% block title %}{{ child.first_name }}'s Academic Overview | Parent Portal{% endblock %}
+
+{% block parent_content %}
+
+  <!-- Student Hero Card -->
+  <div class="student-hero-card">
+    <img src="{{ child.photo_url or url_for('static', filename='images/school/students_reading.jpg') }}" alt="{{ child.first_name }}" class="student-avatar">
+    <div class="student-meta" style="flex-grow:1;">
+      <h2>{{ child.first_name }} {{ child.last_name }}</h2>
+      <p>
+        <strong>{{ child.class_name }}</strong> (Section {{ child.section }}) &bull; Roll No: <strong>#{{ child.roll_no }}</strong> &bull; Admission No: <strong>{{ child.admission_no }}</strong>
+      </p>
+      <div style="font-size:0.8rem; color:#a7f3d0; margin-top:0.35rem;">
+        Blood Group: <strong>{{ child.blood_group or 'N/A' }}</strong> &bull; DOB: {{ child.dob or 'N/A' }} &bull; Emergency: {{ child.emergency_contact or 'N/A' }}
+      </div>
+    </div>
+    <div>
+      <span class="badge badge-success" style="font-size:0.85rem; padding:0.4rem 0.85rem; background:#ffffff; color:#065f46;">
+        Enrolled &amp; Active
+      </span>
+    </div>
+  </div>
+
+  <!-- Key Metrics Row -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-label">Attendance Rate</span>
+      <div class="stat-value" style="color:{% if attendance_summary.percentage >= 85 %}#16a34a{% elif attendance_summary.percentage >= 75 %}#d97706{% else %}#dc2626{% endif %};">
+        {{ attendance_summary.percentage }}%
+      </div>
+      <span style="font-size:0.8rem; color:var(--text-muted);">
+        {{ attendance_summary.present_days }} / {{ attendance_summary.total_days }} School Days
+      </span>
+    </div>
+
+    <div class="stat-card">
+      <span class="stat-label">Latest Exam Term</span>
+      {% if latest_exam %}
+        <div class="stat-value" style="color:var(--primary);">
+          {{ latest_exam.percentage }}%
+        </div>
+        <span style="font-size:0.8rem; color:var(--text-muted);">
+          Grade: <strong>{{ latest_exam.overall_grade }}</strong>
+        </span>
+      {% else %}
+        <div class="stat-value" style="color:var(--text-muted); font-size:1.4rem;">N/A</div>
+        <span style="font-size:0.8rem; color:var(--text-muted);">No exams evaluated yet</span>
+      {% endif %}
+    </div>
+
+    <div class="stat-card">
+      <span class="stat-label">Fee Status</span>
+      {% if fees_summary.total_due > 0 %}
+        <div class="stat-value" style="color:#dc2626;">
+          ₹ {{ fees_summary.total_due|int }}
+        </div>
+        <span class="badge badge-danger" style="margin-top:0.25rem;">
+          {{ fees_summary.pending_count }} Pending Voucher(s)
+        </span>
+      {% else %}
+        <div class="stat-value" style="color:#16a34a;">
+          ₹ 0
+        </div>
+        <span class="badge badge-success" style="margin-top:0.25rem;">
+          All Dues Paid
+        </span>
+      {% endif %}
+    </div>
+
+    <div class="stat-card">
+      <span class="stat-label">School Routine</span>
+      <div class="stat-value" style="font-size:1.35rem; color:var(--primary);">
+        6 Days / Wk
+      </div>
+      <a href="{{ url_for('parent.timetable') }}" style="font-size:0.8rem; font-weight:700; color:var(--primary);">
+        View Timetable &rarr;
+      </a>
+    </div>
+  </div>
+
+  <!-- Fee Notice Alert (if dues exist) -->
+  {% if fees_summary.total_due > 0 %}
+    <div style="background:#fee2e2; border:1px solid #fca5a5; border-radius:var(--radius-md); padding:1rem 1.25rem; margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem;">
+      <div>
+        <h4 style="color:#991b1b; font-size:1rem; margin-bottom:0.2rem;">⚠️ Fee Payment Pending</h4>
+        <p style="color:#7f1d1d; font-size:0.875rem; margin:0;">
+          An outstanding balance of <strong>₹ {{ fees_summary.total_due|int }}</strong> is due for {{ child.first_name }}. Please clear at the school counter.
+        </p>
+      </div>
+      <a href="{{ url_for('parent.fees') }}" class="btn btn-sm btn-danger">View Fee Vouchers &rarr;</a>
+    </div>
+  {% endif %}
+
+  <!-- 2-Column: Recent Attendance & Latest Exam Results -->
+  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:1.5rem; margin-bottom:2rem;">
+    
+    <!-- Recent Attendance Log -->
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:1px solid var(--border-light); padding-bottom:0.5rem;">
+        <h3 style="font-size:1.1rem; color:var(--text-main);">Recent Attendance (Last 7 Days)</h3>
+        <a href="{{ url_for('parent.attendance') }}" style="font-size:0.8rem; font-weight:700;">Full Calendar &rarr;</a>
+      </div>
+
+      {% if recent_attendance %}
+        <div style="display:flex; flex-direction:column; gap:0.6rem;">
+          {% for a in recent_attendance %}
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:0.45rem 0.65rem; background:var(--bg-muted); border-radius:var(--radius-sm); font-size:0.875rem;">
+              <span>📅 {{ a.date }}</span>
+              <span class="badge {% if a.status == 'Present' %}badge-success{% elif a.status == 'Late' %}badge-warning{% else %}badge-danger{% endif %}">
+                {{ a.status }}
+              </span>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p style="color:var(--text-muted); font-size:0.875rem; text-align:center; padding:1.5rem 0;">No attendance logs recorded yet.</p>
+      {% endif %}
+    </div>
+
+    <!-- Latest Exam Result -->
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:1px solid var(--border-light); padding-bottom:0.5rem;">
+        <h3 style="font-size:1.1rem; color:var(--text-main);">Latest Exam Performance</h3>
+        <a href="{{ url_for('parent.results') }}" style="font-size:0.8rem; font-weight:700;">Full Report Card &rarr;</a>
+      </div>
+
+      {% if latest_exam %}
+        <div>
+          <div style="background:var(--primary-lightest); padding:0.75rem; border-radius:var(--radius-sm); margin-bottom:0.85rem; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <strong style="color:var(--primary);">{{ latest_exam.exam_name }}</strong>
+              <div style="font-size:0.75rem; color:var(--text-muted);">Conducted: {{ latest_exam.exam_date }}</div>
+            </div>
+            <div style="text-align:right;">
+              <span class="badge badge-success" style="font-size:0.85rem;">{{ latest_exam.percentage }}%</span>
+              <div style="font-size:0.75rem; font-weight:700; color:var(--primary);">{{ latest_exam.overall_grade }}</div>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="custom-table" style="font-size:0.85rem;">
+              <thead>
+                <tr>
+                  <th>Subject</th>
+                  <th>Marks</th>
+                  <th>Max</th>
+                  <th>Grade</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for sub in latest_exam.subjects[:4] %}
+                  <tr>
+                    <td>{{ sub.subject }}</td>
+                    <td><strong>{{ sub.marks_obtained|int }}</strong></td>
+                    <td>{{ sub.max_marks|int }}</td>
+                    <td><span class="grade-pill grade-{{ sub.grade }}">{{ sub.grade }}</span></td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% if latest_exam.subjects|length > 4 %}
+            <p style="font-size:0.75rem; color:var(--text-muted); text-align:center; margin-top:0.4rem;">
+              + {{ latest_exam.subjects|length - 4 }} additional subjects in full report.
+            </p>
+          {% endif %}
+        </div>
+      {% else %}
+        <p style="color:var(--text-muted); font-size:0.875rem; text-align:center; padding:1.5rem 0;">No term exam results published yet.</p>
+      {% endif %}
+    </div>
+
+  </div>
+
+  <!-- Parent Circulars / School Notices -->
+  <div class="card" style="padding:1.5rem;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:1px solid var(--border-light); padding-bottom:0.5rem;">
+      <h3 style="font-size:1.15rem; color:var(--text-main);">📢 Important Parent Notices &amp; Circulars</h3>
+      <a href="{{ url_for('parent.notices') }}" style="font-size:0.825rem; font-weight:700;">All Circulars &rarr;</a>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:0.75rem;">
+      {% for n in notices %}
+        <div style="padding:0.75rem; border-left:3px solid var(--primary); background:var(--bg-muted); border-radius:var(--radius-sm);">
+          <div style="display:flex; justify-content:space-between; font-size:0.775rem; color:var(--text-muted); margin-bottom:0.25rem;">
+            <span>{{ n.category }}</span>
+            <span>📅 {{ n.published_date }}</span>
+          </div>
+          <h4 style="font-size:0.95rem; margin-bottom:0.25rem; color:var(--text-main);">{{ n.title }}</h4>
+          <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.4;">{{ n.content[:140] }}...</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+{% endblock %}

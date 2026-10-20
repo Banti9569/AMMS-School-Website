@@ -1,0 +1,147 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Manage Fees &amp; Payments | Admin Panel{% endblock %}
+
+{% block admin_content %}
+
+  <div class="admin-header">
+    <div>
+      <span class="section-subtitle">Accounts Desk</span>
+      <h1 class="admin-title">Student Fees &amp; Payments</h1>
+    </div>
+    <a href="#add" class="btn btn-primary" onclick="document.getElementById('addFeeForm').style.display='block'">
+      ➕ Generate Fee Invoice
+    </a>
+  </div>
+
+  <!-- Generate Fee Invoice Form -->
+  <div class="admin-card" id="addFeeForm" style="display:none; border:2px solid var(--primary-border);">
+    <div class="admin-card-header">
+      <h3 class="admin-card-title">Generate Fee Invoice / Voucher</h3>
+      <button type="button" class="btn btn-sm btn-secondary" onclick="document.getElementById('addFeeForm').style.display='none'">✕ Close</button>
+    </div>
+
+    <form method="POST" action="{{ url_for('admin.fees') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="action" value="create">
+
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:1rem;">
+        <div class="form-group">
+          <label class="form-label">Select Student *</label>
+          <select name="student_id" class="form-select" required>
+            {% for s in students %}
+              <option value="{{ s.id }}">
+                {{ s.class_name }} - {{ s.first_name }} {{ s.last_name }} (Adm: {{ s.admission_no }})
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Fee Title / Description *</label>
+          <input type="text" name="fee_title" class="form-control" placeholder="e.g. Monthly Tuition - November 2026" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Fee Amount (₹) *</label>
+          <input type="number" step="10" name="amount" class="form-control" placeholder="e.g. 1200" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Due Date *</label>
+          <input type="date" name="due_date" class="form-control" required>
+        </div>
+      </div>
+
+      <div style="margin-top:1rem;">
+        <button type="submit" class="btn btn-primary">Generate Invoice</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Filter Toolbar -->
+  <div class="action-toolbar">
+    <div class="filter-pills" style="margin-bottom:0;">
+      <a href="{{ url_for('admin.fees', status='All') }}" class="filter-pill {% if status_filter == 'All' or not status_filter %}active{% endif %}">All Vouchers</a>
+      <a href="{{ url_for('admin.fees', status='Pending') }}" class="filter-pill {% if status_filter == 'Pending' %}active{% endif %}">Pending Only</a>
+      <a href="{{ url_for('admin.fees', status='Paid') }}" class="filter-pill {% if status_filter == 'Paid' %}active{% endif %}">Paid</a>
+      <a href="{{ url_for('admin.fees', status='Partial') }}" class="filter-pill {% if status_filter == 'Partial' %}active{% endif %}">Partial</a>
+    </div>
+
+    <span style="font-size:0.85rem; color:var(--text-muted); font-weight:700;">
+      {{ fees|length }} Invoices Found
+    </span>
+  </div>
+
+  <!-- Fees Table -->
+  <div class="admin-card" style="padding:0; overflow:hidden;">
+    {% if fees %}
+      <div class="table-responsive" style="margin-bottom:0;">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>Student Name</th>
+              <th>Class</th>
+              <th>Fee Title</th>
+              <th>Due Date</th>
+              <th>Total</th>
+              <th>Paid</th>
+              <th>Status</th>
+              <th>Receipt</th>
+              <th style="text-align:right;">Record Payment</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for f in fees %}
+              <tr>
+                <td>
+                  <strong>{{ f.first_name }} {{ f.last_name }}</strong>
+                  <div style="font-size:0.75rem; color:var(--text-muted);">Adm: {{ f.admission_no }}</div>
+                </td>
+                <td>{{ f.class_name }}</td>
+                <td>{{ f.fee_title }}</td>
+                <td>{{ f.due_date }}</td>
+                <td><strong>₹ {{ f.amount|int }}</strong></td>
+                <td style="color:#16a34a; font-weight:700;">₹ {{ f.paid_amount|int }}</td>
+                <td>
+                  <span class="badge {% if f.payment_status == 'Paid' %}badge-success{% elif f.payment_status == 'Partial' %}badge-warning{% else %}badge-danger{% endif %}">
+                    {{ f.payment_status }}
+                  </span>
+                </td>
+                <td style="font-size:0.8rem; font-family:monospace;">
+                  {{ f.receipt_no or '-' }}
+                </td>
+                <td style="text-align:right;">
+                  {% if f.payment_status != 'Paid' %}
+                    <!-- Quick payment collection inline modal / form -->
+                    <form method="POST" action="{{ url_for('admin.fees') }}" style="display:inline-flex; gap:0.25rem; align-items:center;">
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                      <input type="hidden" name="action" value="record_payment">
+                      <input type="hidden" name="fee_id" value="{{ f.id }}">
+                      <input type="number" name="paid_amount" value="{{ (f.amount - (f.paid_amount or 0))|int }}" style="width:75px; padding:0.25rem 0.4rem; font-size:0.8rem; border:1px solid var(--border-light); border-radius:4px;" title="Amount to collect">
+                      <select name="payment_method" style="padding:0.25rem; font-size:0.75rem; border:1px solid var(--border-light); border-radius:4px;">
+                        <option value="Cash">Cash</option>
+                        <option value="UPI">UPI</option>
+                        <option value="Bank">Bank</option>
+                      </select>
+                      <button type="submit" class="btn btn-sm btn-primary" style="padding:0.25rem 0.65rem; font-size:0.75rem;">
+                        Collect
+                      </button>
+                    </form>
+                  {% else %}
+                    <span style="font-size:0.8rem; color:#16a34a; font-weight:700;">✓ Settled</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div style="padding:3rem 1.5rem; text-align:center; color:var(--text-muted);">
+        No fee records found.
+      </div>
+    {% endif %}
+  </div>
+
+{% endblock %}

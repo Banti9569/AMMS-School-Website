@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>{% block title %}Al Majid Mission School - Hazipur, West Bengal{% endblock %}</title>
+  <meta name="description" content="Al Majid Mission School, Hazipur, West Bengal 731245. High-quality holistic modern education, moral discipline, smart classrooms, and nurturing environment.">
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='images/logo.svg') }}">
+
+  <!-- Core Styles -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+  <!-- Top Announcement Bar -->
+  <div class="top-notice-bar">
+    <div class="container" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+      <span>📢 <strong>Admissions Open 2026-27</strong> for Nursery to Class X</span>
+      <div style="display:flex; gap:1rem; align-items:center;">
+        <a href="{{ url_for('public.admissions') }}">Apply Now &rarr;</a>
+        <span style="opacity:0.7; font-size:0.75rem;">| Helpline: +91 94340 56789</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Sticky Header -->
+  <header class="site-header" id="siteHeader">
+    <div class="container header-inner">
+      <a href="{{ url_for('public.home') }}" class="brand-wrapper" title="Al Majid Mission School Home">
+        <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="Al Majid Mission School Emblem Crest" class="brand-logo" width="44" height="44">
+        <div class="brand-text">
+          <span class="brand-title">Al Majid Mission School</span>
+          <span class="brand-subtitle">Hazipur, West Bengal - 731245</span>
+        </div>
+      </a>
+
+      <!-- Desktop Navigation -->
+      <nav class="desktop-nav" aria-label="Main Navigation">
+        <a href="{{ url_for('public.home') }}" class="nav-link {% if request.endpoint == 'public.home' %}active{% endif %}">Home</a>
+        <a href="{{ url_for('public.about') }}" class="nav-link {% if request.endpoint == 'public.about' %}active{% endif %}">About</a>
+        <a href="{{ url_for('public.admissions') }}" class="nav-link {% if request.endpoint == 'public.admissions' %}active{% endif %}">Admissions</a>
+        <a href="{{ url_for('public.staff') }}" class="nav-link {% if request.endpoint == 'public.staff' %}active{% endif %}">Staff</a>
+        <a href="{{ url_for('public.gallery') }}" class="nav-link {% if request.endpoint == 'public.gallery' %}active{% endif %}">Gallery</a>
+        <a href="{{ url_for('public.notices') }}" class="nav-link {% if request.endpoint == 'public.notices' %}active{% endif %}">Notices</a>
+        <a href="{{ url_for('public.contact') }}" class="nav-link {% if request.endpoint == 'public.contact' %}active{% endif %}">Contact</a>
+
+        {% if session.get('role') == 'parent' %}
+          <a href="{{ url_for('parent.dashboard') }}" class="nav-btn-parent">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Parent Portal
+          </a>
+        {% elif session.get('role') == 'admin' %}
+          <a href="{{ url_for('admin.dashboard') }}" class="nav-btn-parent" style="background:linear-gradient(135deg, #1e3a8a, #2563eb);">
+            Admin Panel
+          </a>
+        {% else %}
+          <a href="{{ url_for('auth.login') }}" class="nav-btn-parent">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+            Portal Login
+          </a>
+        {% endif %}
+      </nav>
+
+      <!-- Header Action Items (Theme + Mobile Menu) -->
+      <div class="header-actions">
+        <button type="button" class="btn-icon theme-toggle" title="Toggle Light/Dark Theme" aria-label="Toggle Theme">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        </button>
+
+        <button type="button" class="btn-icon btn-menu-toggle" id="menuToggle" aria-label="Open Navigation Menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Drawer Menu (Off-Canvas) -->
+  <div class="mobile-drawer-overlay" id="drawerOverlay"></div>
+  <aside class="mobile-drawer" id="mobileDrawer" aria-label="Mobile Navigation Drawer">
+    <div class="drawer-header">
+      <div class="drawer-brand">
+        <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="Logo" width="32" height="32">
+        <h3>Al Majid Mission</h3>
+      </div>
+      <button type="button" class="btn-icon" id="drawerClose" aria-label="Close Menu">✕</button>
+    </div>
+    
+    <div class="drawer-nav">
+      <a href="{{ url_for('public.home') }}" class="drawer-link {% if request.endpoint == 'public.home' %}active{% endif %}">🏠 Home</a>
+      <a href="{{ url_for('public.about') }}" class="drawer-link {% if request.endpoint == 'public.about' %}active{% endif %}">📖 About Us</a>
+      <a href="{{ url_for('public.admissions') }}" class="drawer-link {% if request.endpoint == 'public.admissions' %}active{% endif %}">🎓 Admissions & Fees</a>
+      <a href="{{ url_for('public.staff') }}" class="drawer-link {% if request.endpoint == 'public.staff' %}active{% endif %}">👨‍🏫 Teachers & Staff</a>
+      <a href="{{ url_for('public.gallery') }}" class="drawer-link {% if request.endpoint == 'public.gallery' %}active{% endif %}">🖼️ School Gallery</a>
+      <a href="{{ url_for('public.notices') }}" class="drawer-link {% if request.endpoint == 'public.notices' %}active{% endif %}">📢 Notices & Events</a>
+      <a href="{{ url_for('public.contact') }}" class="drawer-link {% if request.endpoint == 'public.contact' %}active{% endif %}">📍 Contact Us</a>
+
+      <div style="border-top:1px solid var(--border-light); margin:0.75rem 0; padding-top:0.75rem;">
+        {% if session.get('role') == 'parent' %}
+          <a href="{{ url_for('parent.dashboard') }}" class="drawer-link" style="color:var(--primary); font-weight:700;">
+            📊 Parent Dashboard
+          </a>
+          <a href="{{ url_for('auth.logout') }}" class="drawer-link" style="color:#dc2626;">
+            🚪 Log Out ({{ session.get('full_name', 'Parent') }})
+          </a>
+        {% elif session.get('role') == 'admin' %}
+          <a href="{{ url_for('admin.dashboard') }}" class="drawer-link" style="color:#2563eb; font-weight:700;">
+            ⚙️ Admin Panel
+          </a>
+          <a href="{{ url_for('auth.logout') }}" class="drawer-link" style="color:#dc2626;">
+            🚪 Admin Log Out
+          </a>
+        {% else %}
+          <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-block" style="margin-top:0.5rem;">
+            🔐 Parent / Admin Login
+          </a>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="drawer-footer">
+      <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.5rem;">Need urgent assistance?</p>
+      <a href="tel:+919434056789" class="btn btn-secondary btn-sm btn-block">📞 Call +91 94340 56789</a>
+    </div>
+  </aside>
+
+  <!-- Flash Messages -->
+  <div class="container flash-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}" role="alert">
+            <span>{{ message }}</span>
+            <button type="button" style="background:none; border:none; cursor:pointer; font-size:1.1rem; color:inherit;" onclick="this.parentElement.remove();">&times;</button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  <!-- Main Content Block -->
+  <main id="mainContent">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <div style="display:flex; align-items:center; gap:0.65rem; margin-bottom:1rem;">
+            <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="Logo" width="40" height="40" style="filter:brightness(1.2);">
+            <h3 style="color:#ffffff; font-size:1.25rem;">Al Majid Mission School</h3>
+          </div>
+          <p style="font-size:0.9rem; color:#cbd5e1; margin-bottom:1.25rem; line-height:1.5;">
+            Hazipur, West Bengal 731245. A premier co-educational institution committed to academic brilliance, moral integrity, modern scientific temper, and character building since 2012.
+          </p>
+          <div style="display:flex; gap:0.5rem;">
+            <a href="{{ url_for('auth.login', role='parent') }}" class="btn btn-sm btn-gold">Parent Portal</a>
+            <a href="{{ url_for('auth.login', role='admin') }}" class="btn btn-sm btn-secondary" style="border-color:#cbd5e1; color:#ffffff !important;">Admin Login</a>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h4>Quick Links</h4>
+          <ul class="footer-links">
+            <li><a href="{{ url_for('public.home') }}">Home</a></li>
+            <li><a href="{{ url_for('public.about') }}">About Our Mission</a></li>
+            <li><a href="{{ url_for('public.admissions') }}">Admissions & Fees</a></li>
+            <li><a href="{{ url_for('public.staff') }}">Faculty & Teachers</a></li>
+            <li><a href="{{ url_for('public.gallery') }}">Campus Gallery</a></li>
+            <li><a href="{{ url_for('public.notices') }}">Notice Board</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Parent Help</h4>
+          <ul class="footer-links">
+            <li><a href="{{ url_for('auth.login', role='parent') }}">Mobile Number Login</a></li>
+            <li><a href="{{ url_for('auth.reset_password_request') }}">Password Reset Help</a></li>
+            <li><a href="{{ url_for('public.admissions') }}#fee-structure">Fee Structure</a></li>
+            <li><a href="{{ url_for('public.contact') }}">Submit Inquiry</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Contact & Location</h4>
+          <div class="footer-contact-item">
+            <span>📍</span>
+            <span>Hazipur, P.O. Hazipur, West Bengal - 731245 (Near Border of Murshidabad &amp; Birbhum)</span>
+          </div>
+          <div class="footer-contact-item">
+            <span>📞</span>
+            <span>+91 94340 56789, +91 98765 43210</span>
+          </div>
+          <div class="footer-contact-item">
+            <span>✉️</span>
+            <span>info@almajidmissionschool.edu.in</span>
+          </div>
+          <div class="footer-contact-item">
+            <span>⏰</span>
+            <span>Mon - Sat: 8:00 AM - 3:30 PM (Fri: 8:00 AM - 12:00 PM)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>
+          &copy; {{ current_year }} Al Majid Mission School. Hazipur, West Bengal 731245. All rights reserved.
+        </div>
+        <div class="footer-credits">
+          Educational imagery provided under free licenses via <a href="https://unsplash.com" target="_blank" rel="noopener">Unsplash</a> &amp; <a href="https://pexels.com" target="_blank" rel="noopener">Pexels</a>.
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Mobile Sticky Bottom Quick-Bar -->
+  <nav class="mobile-bottom-bar" aria-label="Mobile Quick Bar">
+    <a href="{{ url_for('public.home') }}" class="bottom-tab {% if request.endpoint == 'public.home' %}active{% endif %}">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Home</span>
+    </a>
+    <a href="{{ url_for('public.admissions') }}" class="bottom-tab {% if request.endpoint == 'public.admissions' %}active{% endif %}">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+      <span>Admissions</span>
+    </a>
+    <a href="{{ url_for('public.notices') }}" class="bottom-tab {% if request.endpoint == 'public.notices' %}active{% endif %}">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span>Notices</span>
+    </a>
+    {% if session.get('role') == 'parent' %}
+      <a href="{{ url_for('parent.dashboard') }}" class="bottom-tab bottom-tab-highlight active">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span>Parent</span>
+      </a>
+    {% elif session.get('role') == 'admin' %}
+      <a href="{{ url_for('admin.dashboard') }}" class="bottom-tab bottom-tab-highlight active">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>Admin</span>
+      </a>
+    {% else %}
+      <a href="{{ url_for('auth.login') }}" class="bottom-tab bottom-tab-highlight">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        <span>Login</span>
+      </a>
+    {% endif %}
+    <a href="tel:+919434056789" class="bottom-tab">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      <span>Call</span>
+    </a>
+  </nav>
+
+  <!-- Lightbox Modal Container -->
+  <div class="lightbox-modal" id="lightboxModal" role="dialog" aria-modal="true" aria-label="Image Preview Lightbox">
+    <div class="lightbox-content">
+      <button class="lightbox-close" aria-label="Close Lightbox">&times;</button>
+      <button class="lightbox-nav lightbox-prev" aria-label="Previous image">&#10094;</button>
+      <img src="" alt="" class="lightbox-img">
+      <button class="lightbox-nav lightbox-next" aria-label="Next image">&#10095;</button>
+      <div class="lightbox-caption"></div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/lightbox.js') }}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

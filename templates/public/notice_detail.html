@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}{{ notice.title }} | Al Majid Mission School{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top:1.5rem; padding-bottom:3rem; max-width:850px;">
+
+  <!-- Breadcrumb -->
+  <div style="margin-bottom:1.25rem;">
+    <a href="{{ url_for('public.notices') }}" style="display:inline-flex; align-items:center; gap:0.35rem; font-weight:600; font-size:0.9rem;">
+      &larr; Back to All Notices
+    </a>
+  </div>
+
+  <article class="card" style="padding:2rem;">
+    <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1rem; flex-wrap:wrap;">
+      <span class="badge badge-primary">{{ notice.category }}</span>
+      <span style="font-size:0.85rem; color:var(--text-muted);">📅 Published: {{ notice.published_date }}</span>
+      {% if notice.is_pinned %}
+        <span class="badge badge-warning">📌 Important Notice</span>
+      {% endif %}
+      <span style="font-size:0.85rem; color:var(--text-muted); margin-left:auto;">For: {{ notice.target_audience }}</span>
+    </div>
+
+    <h1 style="font-size:clamp(1.4rem, 3.5vw, 2rem); color:var(--primary); margin-bottom:1.5rem; line-height:1.25;">
+      {{ notice.title }}
+    </h1>
+
+    <div style="font-size:1.05rem; line-height:1.75; color:var(--text-main); white-space:pre-line; margin-bottom:2rem; border-top:1px solid var(--border-light); padding-top:1.5rem;">
+      {{ notice.content }}
+    </div>
+
+    {% if notice.file_url %}
+      <div style="background:var(--primary-lightest); border:1px solid var(--primary-border); border-radius:var(--radius-sm); padding:1rem; margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:center;">
+        <span>Attached Document Available</span>
+        <a href="{{ notice.file_url }}" target="_blank" class="btn btn-sm btn-primary">Download / View File</a>
+      </div>
+    {% endif %}
+
+    <div style="border-top:1px solid var(--border-light); padding-top:1.25rem; display:flex; justify-content:space-between; align-items:center; font-size:0.85rem; color:var(--text-muted);">
+      <span>Issued by: Office of the Principal &amp; Secretary</span>
+      <span>Hazipur, West Bengal</span>
+    </div>
+  </article>
+
+</div>
+{% endblock %}

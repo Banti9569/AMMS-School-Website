@@ -1,0 +1,149 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Manage Class Timetable | Admin Panel{% endblock %}
+
+{% block admin_content %}
+
+  <div class="admin-header">
+    <div>
+      <span class="section-subtitle">Academic Routine</span>
+      <h1 class="admin-title">Class Timetable Management</h1>
+    </div>
+    <a href="#add" class="btn btn-primary" onclick="document.getElementById('addSlotForm').style.display='block'">
+      ➕ Add Period Slot
+    </a>
+  </div>
+
+  <!-- Class Filter Form -->
+  <div class="admin-card" style="margin-bottom:1.5rem; padding:1.25rem;">
+    <form method="GET" action="{{ url_for('admin.timetable') }}" style="display:flex; flex-wrap:wrap; gap:1rem; align-items:flex-end;">
+      <div class="form-group" style="margin-bottom:0; min-width:200px;">
+        <label class="form-label">Select Class to Manage</label>
+        <select name="class_name" class="form-select auto-submit-filter">
+          {% for c in classes %}
+            <option value="{{ c }}" {% if selected_class == c %}selected{% endif %}>{{ c }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary">Load Timetable</button>
+    </form>
+  </div>
+
+  <!-- Add Slot Form -->
+  <div class="admin-card" id="addSlotForm" style="display:none; border:2px solid var(--primary-border); margin-bottom:1.5rem;">
+    <div class="admin-card-header">
+      <h3 class="admin-card-title">Add Timetable Slot for {{ selected_class }}</h3>
+      <button type="button" class="btn btn-sm btn-secondary" onclick="document.getElementById('addSlotForm').style.display='none'">✕ Close</button>
+    </div>
+
+    <form method="POST" action="{{ url_for('admin.timetable', class_name=selected_class) }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="action" value="add">
+
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:1rem;">
+        <div class="form-group">
+          <label class="form-label">Day of Week *</label>
+          <select name="day_of_week" class="form-select" required>
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday">Friday</option>
+            <option value="Saturday">Saturday</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Period Number *</label>
+          <input type="number" name="period_no" class="form-control" value="1" min="1" max="8" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Time Slot *</label>
+          <input type="text" name="period_time" class="form-control" placeholder="09:00 AM - 09:45 AM" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Subject *</label>
+          <input type="text" name="subject" class="form-control" placeholder="e.g. Mathematics" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Assigned Teacher</label>
+          <input type="text" name="teacher_name" class="form-control" placeholder="e.g. Mrs. Shabana Parveen" list="teachersList">
+          <datalist id="teachersList">
+            {% for t in teachers %}
+              <option value="{{ t.name }}">{{ t.name }} ({{ t.subject }})</option>
+            {% endfor %}
+          </datalist>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Room Number</label>
+          <input type="text" name="room_no" class="form-control" value="Room 101">
+        </div>
+      </div>
+
+      <div style="margin-top:1rem;">
+        <button type="submit" class="btn btn-primary">Save Timetable Slot</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Weekly Timetable View -->
+  <div style="display:flex; flex-direction:column; gap:1.25rem;">
+    {% for day, periods in schedule.items() %}
+      <div class="admin-card" style="padding:0; overflow:hidden;">
+        <div style="padding:0.75rem 1.25rem; background:var(--primary-lightest); border-bottom:1px solid var(--primary-border); display:flex; justify-content:space-between; align-items:center;">
+          <h3 style="font-size:1rem; color:var(--primary); margin:0; font-weight:800;">
+            📅 {{ day }} - {{ selected_class }}
+          </h3>
+          <span style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">{{ periods|length }} Periods</span>
+        </div>
+
+        {% if periods %}
+          <div class="table-responsive" style="margin-bottom:0;">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th style="width:70px;">Period</th>
+                  <th>Timing</th>
+                  <th>Subject</th>
+                  <th>Teacher</th>
+                  <th>Room</th>
+                  <th style="text-align:right;">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for p in periods %}
+                  <tr>
+                    <td><span class="badge badge-primary">#{{ p.period_no }}</span></td>
+                    <td style="color:var(--text-muted); font-size:0.85rem;">{{ p.period_time }}</td>
+                    <td><strong>{{ p.subject }}</strong></td>
+                    <td>{{ p.teacher_name or 'Faculty Assigned' }}</td>
+                    <td>{{ p.room_no or '-' }}</td>
+                    <td style="text-align:right;">
+                      <form method="POST" action="{{ url_for('admin.timetable', class_name=selected_class) }}" style="display:inline;" data-confirm="Remove this timetable slot?">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="action" value="delete">
+                        <input type="hidden" name="slot_id" value="{{ p.id }}">
+                        <button type="submit" class="btn btn-sm btn-danger" style="padding:0.2rem 0.5rem; font-size:0.75rem;">
+                          🗑️
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div style="padding:1.25rem; text-align:center; color:var(--text-muted); font-size:0.85rem;">
+            No period slots added for {{ day }}.
+          </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+
+{% endblock %}

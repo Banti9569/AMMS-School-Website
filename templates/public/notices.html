@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Notices &amp; Upcoming Events | Al Majid Mission School{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top:1.5rem; padding-bottom:3rem;">
+
+  <!-- Header -->
+  <div class="section-header">
+    <span class="section-subtitle">Official Announcements</span>
+    <h1 class="section-title">Notices &amp; School Circulars</h1>
+    <p class="section-desc">
+      Stay informed with real-time academic routines, exam notifications, admission schedules, and school holiday announcements.
+    </p>
+  </div>
+
+  <!-- Search & Category Filters -->
+  <div style="background:var(--bg-surface); border:1px solid var(--border-light); border-radius:var(--radius-md); padding:1rem; margin-bottom:1.5rem; box-shadow:var(--shadow-sm);">
+    <form method="GET" action="{{ url_for('public.notices') }}" style="display:flex; flex-direction:column; md:flex-row; gap:0.75rem; margin-bottom:0.75rem;">
+      <div style="flex-grow:1; display:flex; gap:0.5rem;">
+        <input type="text" name="search" value="{{ search or '' }}" placeholder="Search notices by keyword or subject..." class="form-control" style="border-radius:var(--radius-sm);">
+        <input type="hidden" name="category" value="{{ current_cat }}">
+        <button type="submit" class="btn btn-primary" style="padding:0 1.25rem;">Search</button>
+      </div>
+      {% if search %}
+        <a href="{{ url_for('public.notices', category=current_cat) }}" class="btn btn-sm btn-secondary" style="align-self:center;">Clear Search</a>
+      {% endif %}
+    </form>
+
+    <!-- Filter Pills -->
+    <div class="filter-pills" style="margin-bottom:0;">
+      {% for cat in categories %}
+        <a href="{{ url_for('public.notices', category=cat, search=search) }}" class="filter-pill {% if current_cat == cat %}active{% endif %}">
+          {{ cat }}
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Notices List -->
+  {% if notices %}
+    <div style="display:flex; flex-direction:column; gap:0.75rem;">
+      {% for n in notices %}
+        <article class="notice-card {% if n.is_pinned %}pinned{% endif %}">
+          <div class="notice-meta">
+            <span class="badge {% if n.category == 'Admission' %}badge-warning{% elif n.category == 'Exam' %}badge-danger{% else %}badge-primary{% endif %}">
+              {{ n.category }}
+            </span>
+            <span>📅 {{ n.published_date }}</span>
+            {% if n.is_pinned %}
+              <span style="color:#d97706; font-weight:700;">📌 Pinned</span>
+            {% endif %}
+            <span style="color:var(--text-light); margin-left:auto; font-size:0.75rem;">Audience: {{ n.target_audience }}</span>
+          </div>
+
+          <h2 class="notice-title">
+            <a href="{{ url_for('public.notice_detail', notice_id=n.id) }}">{{ n.title }}</a>
+          </h2>
+
+          <p class="notice-excerpt">{{ n.content[:200] }}...</p>
+
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <a href="{{ url_for('public.notice_detail', notice_id=n.id) }}" class="btn btn-sm btn-secondary">
+              Read Complete Notice &rarr;
+            </a>
+            {% if n.file_url %}
+              <a href="{{ n.file_url }}" target="_blank" class="btn btn-sm btn-primary">📎 View Attachment</a>
+            {% endif %}
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="card" style="text-align:center; padding:3rem 1.5rem;">
+      <p style="color:var(--text-muted); font-size:1.1rem; margin-bottom:1rem;">No notices found matching your criteria.</p>
+      <a href="{{ url_for('public.notices') }}" class="btn btn-secondary">Reset Filters</a>
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}

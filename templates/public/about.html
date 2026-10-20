@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}About Us - History, Vision & Mission | Al Majid Mission School{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top:1.5rem; padding-bottom:3rem;">
+  
+  <!-- Page Header -->
+  <div class="section-header">
+    <span class="section-subtitle">Since 2012 in Hazipur</span>
+    <h1 class="section-title">About Al Majid Mission School</h1>
+    <p class="section-desc">
+      A center of educational transformation and moral enlightenment nestled in Hazipur, West Bengal 731245.
+    </p>
+  </div>
+
+  <!-- Hero Image & Introduction -->
+  <div style="border-radius:var(--radius-lg); overflow:hidden; margin-bottom:2.5rem; box-shadow:var(--shadow-md);">
+    <img src="{{ url_for('static', filename='images/school/hero_campus.jpg') }}" alt="Al Majid Mission School Campus" style="width:100%; height:320px; object-fit:cover;">
+  </div>
+
+  <!-- History & Journey Section -->
+  <div class="card" style="margin-bottom:2rem; padding:2rem;">
+    <span class="section-subtitle">Our Heritage</span>
+    <h2 style="color:var(--primary); font-size:1.6rem; margin-bottom:1rem;">{{ history.title }}</h2>
+    <div style="font-size:1rem; line-height:1.7; color:var(--text-main); white-space:pre-line;">
+      {{ history.content }}
+    </div>
+  </div>
+
+  <!-- Mission & Vision 2-Column Grid -->
+  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:1.5rem; margin-bottom:2.5rem;">
+    <div class="card" style="border-top:5px solid var(--primary); padding:1.75rem;">
+      <div style="font-size:2rem; margin-bottom:0.5rem;">🎯</div>
+      <h3 style="color:var(--primary); font-size:1.35rem; margin-bottom:0.75rem;">{{ mission.title }}</h3>
+      <p style="color:var(--text-main); line-height:1.6; font-size:0.95rem; white-space:pre-line;">
+        {{ mission.content }}
+      </p>
+    </div>
+
+    <div class="card" style="border-top:5px solid var(--gold); padding:1.75rem;">
+      <div style="font-size:2rem; margin-bottom:0.5rem;">🌟</div>
+      <h3 style="color:var(--primary); font-size:1.35rem; margin-bottom:0.75rem;">{{ vision.title }}</h3>
+      <p style="color:var(--text-main); line-height:1.6; font-size:0.95rem; white-space:pre-line;">
+        {{ vision.content }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Principal's Message Detailed Section -->
+  <div class="card" id="principal-message" style="margin-bottom:2.5rem; padding:2rem; background:linear-gradient(180deg, var(--bg-surface) 0%, var(--primary-lightest) 100%);">
+    <div style="display:flex; flex-direction:column; md:flex-row; gap:2rem; align-items:flex-start;">
+      <div style="text-align:center; margin:0 auto; flex-shrink:0;">
+        <img src="{{ url_for('static', filename='images/staff/principal.jpg') }}" alt="Principal Janab Maqsood Alam" style="width:160px; height:160px; border-radius:50%; object-fit:cover; border:4px solid var(--gold); margin-bottom:0.75rem;">
+        <h4 style="font-size:1.15rem; color:var(--text-main);">Janab Maqsood Alam</h4>
+        <p style="font-size:0.85rem; color:var(--primary); font-weight:700;">Principal &amp; Academic Director</p>
+        <span class="badge badge-primary" style="margin-top:0.35rem;">M.Sc., B.Ed (22+ Yrs Exp)</span>
+      </div>
+      <div style="flex-grow:1;">
+        <span class="section-subtitle">Leadership Message</span>
+        <h2 style="font-size:1.5rem; color:var(--text-main); margin-bottom:1rem;">{{ principal_msg.title }}</h2>
+        <div style="color:var(--text-main); font-size:0.975rem; line-height:1.7; white-space:pre-line;">
+          {{ principal_msg.content }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Core Values -->
+  <div style="margin-top:3rem;">
+    <div class="section-header">
+      <span class="section-subtitle">Our Guiding Light</span>
+      <h2 class="section-title">Institutional Core Values</h2>
+    </div>
+
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:1rem;">
+      <div class="card" style="text-align:center; padding:1.5rem;">
+        <div style="font-size:1.8rem; margin-bottom:0.5rem;">✨</div>
+        <h4 style="color:var(--primary); margin-bottom:0.35rem;">Integrity &amp; Truth</h4>
+        <p style="font-size:0.85rem; color:var(--text-muted);">Honesty in academics, deeds, words, and peer relationships.</p>
+      </div>
+
+      <div class="card" style="text-align:center; padding:1.5rem;">
+        <div style="font-size:1.8rem; margin-bottom:0.5rem;">💡</div>
+        <h4 style="color:var(--primary); margin-bottom:0.35rem;">Scientific Inquiry</h4>
+        <p style="font-size:0.85rem; color:var(--text-muted);">Encouraging critical questioning, logic, experiments, and exploration.</p>
+      </div>
+
+      <div class="card" style="text-align:center; padding:1.5rem;">
+        <div style="font-size:1.8rem; margin-bottom:0.5rem;">🤝</div>
+        <h4 style="color:var(--primary); margin-bottom:0.35rem;">Empathy &amp; Service</h4>
+        <p style="font-size:0.85rem; color:var(--text-muted);">Compassion for all creatures, community upliftment, and mutual respect.</p>
+      </div>
+
+      <div class="card" style="text-align:center; padding:1.5rem;">
+        <div style="font-size:1.8rem; margin-bottom:0.5rem;">🌱</div>
+        <h4 style="color:var(--primary); margin-bottom:0.35rem;">Lifelong Discipline</h4>
+        <p style="font-size:0.85rem; color:var(--text-muted);">Punctuality, consistency, personal cleanliness, and environmental stewardship.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

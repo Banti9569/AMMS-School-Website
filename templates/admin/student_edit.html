@@ -1,0 +1,104 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Edit Student - {{ student.first_name }} | Admin Panel{% endblock %}
+
+{% block admin_content %}
+
+  <div class="admin-header">
+    <div>
+      <span class="section-subtitle">Edit Records</span>
+      <h1 class="admin-title">Edit {{ student.first_name }} {{ student.last_name }}</h1>
+    </div>
+    <a href="{{ url_for('admin.students') }}" class="btn btn-secondary">
+      &larr; Back to Students
+    </a>
+  </div>
+
+  <div class="admin-card">
+    <form method="POST" action="{{ url_for('admin.edit_student', student_id=student.id) }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:1rem;">
+        <div class="form-group">
+          <label class="form-label">Admission Number *</label>
+          <input type="text" name="admission_no" class="form-control" value="{{ student.admission_no }}" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Roll Number *</label>
+          <input type="number" name="roll_no" class="form-control" value="{{ student.roll_no }}" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">First Name *</label>
+          <input type="text" name="first_name" class="form-control" value="{{ student.first_name }}" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Last Name *</label>
+          <input type="text" name="last_name" class="form-control" value="{{ student.last_name }}" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Class *</label>
+          <select name="class_name" class="form-select" required>
+            {% for c in classes %}
+              <option value="{{ c }}" {% if student.class_name == c %}selected{% endif %}>{{ c }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Section</label>
+          <input type="text" name="section" class="form-control" value="{{ student.section or 'A' }}">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Date of Birth</label>
+          <input type="date" name="dob" class="form-control" value="{{ student.dob or '' }}">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Gender</label>
+          <select name="gender" class="form-select">
+            <option value="Male" {% if student.gender == 'Male' %}selected{% endif %}>Male</option>
+            <option value="Female" {% if student.gender == 'Female' %}selected{% endif %}>Female</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Blood Group</label>
+          <input type="text" name="blood_group" class="form-control" value="{{ student.blood_group or '' }}">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Linked Parent Account</label>
+          <select name="parent_id" class="form-select">
+            <option value="">-- No Parent Linked --</option>
+            {% for p in parents %}
+              <option value="{{ p.id }}" {% if student.parent_id == p.id %}selected{% endif %}>
+                {{ p.full_name }} ({{ p.phone }})
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Emergency Contact Phone</label>
+          <input type="tel" name="emergency_contact" class="form-control" value="{{ student.emergency_contact or '' }}">
+        </div>
+
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label class="form-label">Residential Address</label>
+          <input type="text" name="address" class="form-control" value="{{ student.address or '' }}">
+        </div>
+      </div>
+
+      <div style="margin-top:1.5rem; display:flex; gap:0.75rem;">
+        <button type="submit" class="btn btn-primary">Update Student Details</button>
+        <a href="{{ url_for('admin.students') }}" class="btn btn-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+
+{% endblock %}

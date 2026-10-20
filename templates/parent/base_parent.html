@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container" style="padding-top:1.25rem; padding-bottom:3.5rem;">
+
+  <!-- Parent Greeting & Header Bar -->
+  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.25rem; border-bottom:1px solid var(--border-light); padding-bottom:0.75rem;">
+    <div>
+      <span class="section-subtitle" style="margin-bottom:0;">Parent Academic Portal</span>
+      <h1 style="font-size:1.35rem; color:var(--text-main); margin-bottom:0;">
+        Welcome, {{ session.get('full_name', 'Respected Parent') }}
+      </h1>
+    </div>
+    <div style="display:flex; gap:0.5rem; align-items:center;">
+      <a href="{{ url_for('auth.logout') }}" class="btn btn-sm btn-danger">🚪 Log Out</a>
+    </div>
+  </div>
+
+  <!-- Child Switcher Bar (If parent has multiple children enrolled) -->
+  {% if children and children|length > 0 %}
+    <div class="child-selector-bar">
+      <div style="display:flex; align-items:center; gap:0.5rem;">
+        <span style="font-size:0.825rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">
+          {% if children|length > 1 %}Select Ward:{% else %}Student Ward:{% endif %}
+        </span>
+        <div class="child-pill-group">
+          {% for c in children %}
+            <a href="{{ url_for('parent.select_child', student_id=c.id) }}" class="child-pill {% if child and child.id == c.id %}active{% endif %}">
+              👤 {{ c.first_name }} {{ c.last_name }} <span style="opacity:0.85; font-size:0.75rem;">({{ c.class_name }}-{{ c.section }})</span>
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+
+      {% if child %}
+        <div style="display:none; md:block; font-size:0.8rem; color:var(--text-muted);">
+          Adm: <strong>{{ child.admission_no }}</strong> &bull; Roll: <strong>#{{ child.roll_no }}</strong>
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  <!-- Parent Portal Navigation Sub-tabs -->
+  <div class="filter-pills" style="margin-bottom:1.5rem; border-bottom:1px solid var(--border-light); padding-bottom:0.75rem;">
+    <a href="{{ url_for('parent.dashboard') }}" class="filter-pill {% if request.endpoint == 'parent.dashboard' %}active{% endif %}">
+      📊 Overview
+    </a>
+    <a href="{{ url_for('parent.attendance') }}" class="filter-pill {% if request.endpoint == 'parent.attendance' %}active{% endif %}">
+      📅 Attendance
+    </a>
+    <a href="{{ url_for('parent.results') }}" class="filter-pill {% if request.endpoint == 'parent.results' %}active{% endif %}">
+      📝 Exam Results
+    </a>
+    <a href="{{ url_for('parent.fees') }}" class="filter-pill {% if request.endpoint == 'parent.fees' %}active{% endif %}">
+      💳 Fee Status &amp; Receipts
+    </a>
+    <a href="{{ url_for('parent.timetable') }}" class="filter-pill {% if request.endpoint == 'parent.timetable' %}active{% endif %}">
+      ⏰ Class Timetable
+    </a>
+    <a href="{{ url_for('parent.notices') }}" class="filter-pill {% if request.endpoint == 'parent.notices' %}active{% endif %}">
+      📢 Notices
+    </a>
+  </div>
+
+  <!-- Child-specific Page Content -->
+  {% block parent_content %}{% endblock %}
+
+</div>
+{% endblock %}

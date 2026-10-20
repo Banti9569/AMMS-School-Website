@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Our Faculty &amp; Teachers | Al Majid Mission School{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top:1.5rem; padding-bottom:3rem;">
+
+  <!-- Header -->
+  <div class="section-header">
+    <span class="section-subtitle">Dedicated Mentors</span>
+    <h1 class="section-title">Our Faculty &amp; Educational Leaders</h1>
+    <p class="section-desc">
+      Highly qualified, empathetic educators dedicated to cultivating academic brilliance, moral rectitude, and lifelong curiosity.
+    </p>
+  </div>
+
+  <!-- Teachers Grid -->
+  <div class="teachers-grid">
+    {% for t in teachers %}
+      <div class="teacher-card">
+        <div class="teacher-photo-wrap">
+          <img src="{{ t.photo_url }}" alt="{{ t.name }}" class="teacher-photo" loading="lazy">
+        </div>
+        <div class="teacher-info">
+          <h3 class="teacher-name">{{ t.name }}</h3>
+          <div class="teacher-designation">{{ t.designation }}</div>
+          <div class="teacher-subject"><strong>Subject:</strong> {{ t.subject }}</div>
+          <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.75rem;">
+            🎓 {{ t.qualification }} &bull; ⏱️ {{ t.experience_years }}+ Yrs Experience
+          </div>
+          {% if t.bio %}
+            <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.4; border-top:1px dashed var(--border-light); padding-top:0.6rem;">
+              {{ t.bio }}
+            </p>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Join Our Team Prompt -->
+  <div class="card" style="margin-top:3rem; padding:2rem; text-align:center; background:var(--primary-lightest); border-color:var(--primary-border);">
+    <h3 style="color:var(--primary); font-size:1.25rem; margin-bottom:0.5rem;">Interested in Teaching at Al Majid Mission School?</h3>
+    <p style="color:var(--text-muted); font-size:0.925rem; max-width:600px; margin:0 auto 1.25rem;">
+      We welcome applications from motivated teachers holding B.Ed / D.El.Ed credentials who share our passion for holistic education.
+    </p>
+    <a href="{{ url_for('public.contact') }}" class="btn btn-primary">Inquire About Vacancies &rarr;</a>
+  </div>
+
+</div>
+{% endblock %}

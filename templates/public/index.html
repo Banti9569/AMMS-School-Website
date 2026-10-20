@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+
+{% block title %}Al Majid Mission School - Hazipur, West Bengal | Excellence in Education{% endblock %}
+
+{% block content %}
+<div class="container">
+  
+  <!-- Hero Image Slider -->
+  <section class="slider-container" aria-label="School Showcase Slider">
+    <div class="slider-wrapper">
+      {% for slide in slider_slides %}
+        <div class="slide {% if loop.first %}active{% endif %}">
+          <img src="{{ slide.image }}" alt="{{ slide.title }}" class="slide-img" loading="{% if loop.first %}eager{% else %}lazy{% endif %}">
+          <div class="slide-overlay">
+            <h1 class="slide-title">{{ slide.title }}</h1>
+            <p class="slide-subtitle">{{ slide.subtitle }}</p>
+            <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+              <a href="{{ slide.btn_link }}" class="btn btn-gold">{{ slide.btn_text }} &rarr;</a>
+              <a href="{{ url_for('auth.login', role='parent') }}" class="btn btn-secondary" style="border-color:#ffffff; color:#ffffff !important;">Parent Portal</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Slider Controls -->
+    <button class="slider-btn slider-prev" aria-label="Previous Slide">&#10094;</button>
+    <button class="slider-btn slider-next" aria-label="Next Slide">&#10095;</button>
+
+    <div class="slider-dots" role="tablist">
+      {% for slide in slider_slides %}
+        <button class="dot {% if loop.first %}active{% endif %}" aria-label="Go to slide {{ loop.index }}"></button>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- Admissions Open Alert Banner -->
+  <section class="admissions-banner">
+    <div class="banner-content">
+      <div>
+        <span class="banner-tag">Admissions 2026-27</span>
+        <h2 class="banner-title">Enroll Your Child at Al Majid Mission School</h2>
+        <p class="banner-text">
+          Admissions are now open for Pre-Primary (Nursery, KG) up to Class X. Forms are available at the school campus or via online inquiry.
+        </p>
+      </div>
+      <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+        <a href="{{ url_for('public.admissions') }}" class="btn btn-gold">Admission Guidelines</a>
+        <a href="{{ url_for('public.contact') }}" class="btn btn-secondary" style="background:#ffffff; color:#064e3b !important; border:none;">Submit Inquiry</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Notice Board Ticker & Pinned Alerts -->
+  <section style="margin: 2.5rem 0;">
+    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:1.25rem;">
+      <div>
+        <span class="section-subtitle">Official Circulars</span>
+        <h2 class="section-title" style="margin-bottom:0;">Latest School Notices</h2>
+      </div>
+      <a href="{{ url_for('public.notices') }}" class="btn btn-sm btn-secondary">View All Notices &rarr;</a>
+    </div>
+
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:1rem;">
+      {% for n in latest_notices %}
+        <div class="notice-card {% if n.is_pinned %}pinned{% endif %}">
+          <div class="notice-meta">
+            <span class="badge {% if n.category == 'Admission' %}badge-warning{% elif n.category == 'Exam' %}badge-danger{% else %}badge-primary{% endif %}">
+              {{ n.category }}
+            </span>
+            <span>📅 {{ n.published_date }}</span>
+            {% if n.is_pinned %}<span style="color:#d97706; font-weight:700;">📌 Pinned</span>{% endif %}
+          </div>
+          <h3 class="notice-title">
+            <a href="{{ url_for('public.notice_detail', notice_id=n.id) }}">{{ n.title }}</a>
+          </h3>
+          <p class="notice-excerpt">{{ n.content[:130] }}...</p>
+          <a href="{{ url_for('public.notice_detail', notice_id=n.id) }}" style="font-weight:700; font-size:0.875rem;">Read Full Circular &rarr;</a>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- Key Pillars / Why AMMS -->
+  <section style="margin: 3.5rem 0;">
+    <div class="section-header">
+      <span class="section-subtitle">Our Core Philosophy</span>
+      <h2 class="section-title">Why Al Majid Mission School?</h2>
+      <p class="section-desc">
+        We provide a balanced ecosystem where academic excellence, moral rectitude, and future-ready life skills are nurtured in every student.
+      </p>
+    </div>
+
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:1.25rem;">
+      <div class="card card-clickable">
+        <div style="font-size:2.2rem; margin-bottom:0.75rem;">📚</div>
+        <h3 style="font-size:1.15rem; margin-bottom:0.5rem; color:var(--primary);">Rigorous Academic Curriculum</h3>
+        <p style="color:var(--text-muted); font-size:0.9rem;">
+          Aligned with modern West Bengal Board standards, combining English fluency, STEM foundations, and regional languages.
+        </p>
+      </div>
+
+      <div class="card card-clickable">
+        <div style="font-size:2.2rem; margin-bottom:0.75rem;">🕌</div>
+        <h3 style="font-size:1.15rem; margin-bottom:0.5rem; color:var(--primary);">Ethical & Moral Discipline</h3>
+        <p style="color:var(--text-muted); font-size:0.9rem;">
+          Values of honesty, compassion, social duty, cleanliness, and respect embedded into daily routines and morning assembly.
+        </p>
+      </div>
+
+      <div class="card card-clickable">
+        <div style="font-size:2.2rem; margin-bottom:0.75rem;">🔬</div>
+        <h3 style="font-size:1.15rem; margin-bottom:0.5rem; color:var(--primary);">Modern Labs & IT Education</h3>
+        <p style="color:var(--text-muted); font-size:0.9rem;">
+          Well-equipped physics, chemistry, biology practical laboratories and modern computer lab with coding fundamentals.
+        </p>
+      </div>
+
+      <div class="card card-clickable">
+        <div style="font-size:2.2rem; margin-bottom:0.75rem;">⚽</div>
+        <h3 style="font-size:1.15rem; margin-bottom:0.5rem; color:var(--primary);">Sports & Personality Growth</h3>
+        <p style="color:var(--text-muted); font-size:0.9rem;">
+          Football, cricket, athletics, debates, speech contests, and annual cultural exhibitions to cultivate confident leaders.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- School Statistics Counter Strip -->
+  <section style="background:var(--primary-lightest); border:1px solid var(--primary-border); border-radius:var(--radius-lg); padding:2rem 1.5rem; margin:3rem 0;">
+    <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:1.5rem; text-align:center;">
+      <div>
+        <div style="font-size:clamp(2rem, 4vw, 2.75rem); font-weight:800; color:var(--primary); line-height:1;">850+</div>
+        <div style="font-size:0.875rem; font-weight:700; color:var(--text-muted); margin-top:0.35rem;">Enrolled Students</div>
+      </div>
+      <div>
+        <div style="font-size:clamp(2rem, 4vw, 2.75rem); font-weight:800; color:var(--primary); line-height:1;">38+</div>
+        <div style="font-size:0.875rem; font-weight:700; color:var(--text-muted); margin-top:0.35rem;">Dedicated Teachers</div>
+      </div>
+      <div>
+        <div style="font-size:clamp(2rem, 4vw, 2.75rem); font-weight:800; color:var(--primary); line-height:1;">100%</div>
+        <div style="font-size:0.875rem; font-weight:700; color:var(--text-muted); margin-top:0.35rem;">Board Exam Success</div>
+      </div>
+      <div>
+        <div style="font-size:clamp(2rem, 4vw, 2.75rem); font-weight:800; color:var(--primary); line-height:1;">14+</div>
+        <div style="font-size:0.875rem; font-weight:700; color:var(--text-muted); margin-top:0.35rem;">Years of Service</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Principal's Message Preview -->
+  <section style="margin: 3.5rem 0;">
+    <div class="card" style="padding:2rem; border-left: 6px solid var(--primary);">
+      <div style="display:flex; flex-direction:column; md:flex-row; gap:2rem; align-items:center;">
+        <div style="flex-shrink:0; text-align:center;">
+          <img src="{{ url_for('static', filename='images/staff/principal.jpg') }}" alt="Janab Maqsood Alam, Principal" style="width:140px; height:140px; border-radius:50%; object-fit:cover; border:3px solid var(--gold); margin:0 auto 0.75rem;" loading="lazy">
+          <h4 style="font-size:1.05rem; margin-bottom:0.15rem;">Janab Maqsood Alam</h4>
+          <span style="font-size:0.8rem; color:var(--primary); font-weight:700;">Principal &amp; Academic Director</span>
+        </div>
+        <div style="flex-grow:1;">
+          <span class="section-subtitle">Leadership Perspective</span>
+          <h2 style="font-size:1.5rem; margin-bottom:0.85rem;">Nurturing Hearts &amp; Minds Together</h2>
+          <p style="color:var(--text-muted); font-size:0.95rem; line-height:1.6; margin-bottom:1.25rem;">
+            "At Al Majid Mission School, we do not view education merely as a means to acquire marks or certificates, but as a sacred responsibility to build character, critical intellect, and social empathy. Our teachers strive each day to instill curiosity, independent inquiry, and timeless ethical values in our students."
+          </p>
+          <a href="{{ url_for('public.about') }}#principal-message" class="btn btn-sm btn-primary">Read Principal's Full Message &rarr;</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Photo Gallery Preview -->
+  <section style="margin: 3.5rem 0;">
+    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:1.5rem;">
+      <div>
+        <span class="section-subtitle">Campus Life</span>
+        <h2 class="section-title" style="margin-bottom:0;">Moments &amp; Campus Gallery</h2>
+      </div>
+      <a href="{{ url_for('public.gallery') }}" class="btn btn-sm btn-secondary">Open Full Gallery &rarr;</a>
+    </div>
+
+    <div class="gallery-grid">
+      {% for item in gallery_preview %}
+        <div class="gallery-card" data-full-img="{{ item.image_url }}" data-caption="{{ item.caption or item.title }}">
+          <img src="{{ item.image_url }}" alt="{{ item.title }}" class="gallery-thumb" loading="lazy">
+          <div class="gallery-info">
+            <span class="gallery-cat-badge">{{ item.category }}</span>
+            <div class="gallery-title">{{ item.title }}</div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- Dedicated Parent Portal Callout -->
+  <section style="background: linear-gradient(135deg, #06321d, #0d5c3a); color:#ffffff; border-radius:var(--radius-lg); padding:2.5rem 1.5rem; text-align:center; margin:3rem 0; box-shadow:var(--shadow-lg);">
+    <span style="background:var(--gold); color:#06321d; font-weight:800; font-size:0.75rem; padding:0.25rem 0.65rem; border-radius:4px; text-transform:uppercase;">Mobile-First Portal</span>
+    <h2 style="color:#ffffff; font-size:clamp(1.5rem, 3.5vw, 2.2rem); margin:0.75rem 0 0.5rem;">Access Your Child's Academic Records</h2>
+    <p style="color:#d1fae5; max-width:640px; margin:0 auto 1.5rem; font-size:0.95rem;">
+      Parents can log in with their registered mobile phone number to check live daily attendance, term exam mark sheets, fee status and receipts, class routine, and circulars directly from any phone.
+    </p>
+    <a href="{{ url_for('auth.login', role='parent') }}" class="btn btn-gold" style="font-size:1.05rem; padding:0.75rem 1.75rem;">
+      🔐 Log In with Mobile Number &rarr;
+    </a>
+  </section>
+
+</div>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends "parent/base_parent.html" %}
+
+{% block title %}Class Timetable - {{ child.class_name }} | Parent Portal{% endblock %}
+
+{% block parent_content %}
+
+  <div class="card" style="margin-bottom:1.5rem; padding:1.5rem;">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem;">
+      <div>
+        <h2 style="font-size:1.35rem; color:var(--primary); margin-bottom:0.25rem;">Class Routine &amp; Timetable</h2>
+        <p style="font-size:0.875rem; color:var(--text-muted); margin:0;">
+          Weekly period schedule for <strong>{{ child.class_name }} (Section {{ child.section }})</strong>
+        </p>
+      </div>
+      <button type="button" onclick="window.print()" class="btn btn-sm btn-secondary">
+        🖨️ Print Timetable
+      </button>
+    </div>
+
+    <!-- Day-by-Day Schedule -->
+    <div style="display:flex; flex-direction:column; gap:1.25rem;">
+      {% for day, periods in schedule.items() %}
+        <div style="border:1px solid var(--border-light); border-radius:var(--radius-sm); overflow:hidden;">
+          <div style="background:var(--primary-lightest); padding:0.65rem 1rem; border-bottom:1px solid var(--primary-border); display:flex; justify-content:space-between; align-items:center;">
+            <h3 style="font-size:1rem; color:var(--primary); margin:0; font-weight:800;">
+              📅 {{ day }}
+            </h3>
+            <span style="font-size:0.775rem; color:var(--text-muted);">{{ periods|length }} Periods</span>
+          </div>
+
+          {% if periods %}
+            <div class="table-responsive" style="margin-bottom:0;">
+              <table class="custom-table" style="font-size:0.875rem;">
+                <thead>
+                  <tr>
+                    <th style="width:70px;">Period</th>
+                    <th>Time Slot</th>
+                    <th>Subject</th>
+                    <th>Teacher</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for p in periods %}
+                    <tr>
+                      <td><span class="badge badge-primary">#{{ p.period_no }}</span></td>
+                      <td style="color:var(--text-muted);">{{ p.period_time }}</td>
+                      <td><strong>{{ p.subject }}</strong></td>
+                      <td>{{ p.teacher_name or 'Faculty Assigned' }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <div style="padding:1rem; font-size:0.85rem; color:var(--text-muted); text-align:center;">
+              No classes scheduled for {{ day }}.
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+
+  </div>
+
+{% endblock %}

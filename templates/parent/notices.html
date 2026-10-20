@@ -1,0 +1,41 @@
+{% extends "parent/base_parent.html" %}
+
+{% block title %}Circulars &amp; Notices | Parent Portal{% endblock %}
+
+{% block parent_content %}
+
+  <div class="card" style="margin-bottom:1.5rem; padding:1.5rem;">
+    <h2 style="font-size:1.35rem; color:var(--primary); margin-bottom:0.25rem;">Parent Circulars &amp; Direct Notices</h2>
+    <p style="font-size:0.875rem; color:var(--text-muted); margin-bottom:1.5rem;">
+      Important messages, examination guidelines, and holiday circulars addressed to parents.
+    </p>
+
+    {% if notices %}
+      <div style="display:flex; flex-direction:column; gap:1rem;">
+        {% for n in notices %}
+          <div class="notice-card {% if n.is_pinned %}pinned{% endif %}">
+            <div class="notice-meta">
+              <span class="badge badge-primary">{{ n.category }}</span>
+              <span>📅 {{ n.published_date }}</span>
+              {% if n.is_pinned %}<span style="color:#d97706; font-weight:700;">📌 Important</span>{% endif %}
+            </div>
+            <h3 class="notice-title" style="font-size:1.15rem;">{{ n.title }}</h3>
+            <p style="color:var(--text-main); font-size:0.95rem; line-height:1.6; white-space:pre-line; margin-bottom:0.75rem;">
+              {{ n.content }}
+            </p>
+            {% if n.file_url %}
+              <div>
+                <a href="{{ n.file_url }}" target="_blank" class="btn btn-sm btn-primary">📎 View Attachment</a>
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div style="text-align:center; padding:2rem 1rem; color:var(--text-muted);">
+        No circulars currently available for parents.
+      </div>
+    {% endif %}
+  </div>
+
+{% endblock %}

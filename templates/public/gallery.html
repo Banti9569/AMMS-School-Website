@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Photo Gallery | Al Majid Mission School - Hazipur{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top:1.5rem; padding-bottom:3rem;">
+
+  <!-- Header -->
+  <div class="section-header">
+    <span class="section-subtitle">Moments &amp; Memories</span>
+    <h1 class="section-title">School Photo Gallery</h1>
+    <p class="section-desc">
+      Explore vibrant glimpses of classroom learning, scientific experiments, annual athletic competitions, and cultural celebrations.
+    </p>
+  </div>
+
+  <!-- Category Filter Pills -->
+  <div class="filter-pills" role="navigation" aria-label="Gallery Categories">
+    {% for cat in categories %}
+      <a href="{{ url_for('public.gallery', category=cat) }}" class="filter-pill {% if current_cat == cat %}active{% endif %}">
+        {{ cat }}
+      </a>
+    {% endfor %}
+  </div>
+
+  <!-- Gallery Grid -->
+  {% if items %}
+    <div class="gallery-grid">
+      {% for item in items %}
+        <div class="gallery-card" data-full-img="{{ item.image_url }}" data-caption="{{ item.caption or item.title }}">
+          <img src="{{ item.image_url }}" alt="{{ item.title }} - Al Majid Mission School Hazipur" class="gallery-thumb" loading="lazy">
+          <div class="gallery-info">
+            <span class="gallery-cat-badge">{{ item.category }}</span>
+            <div class="gallery-title">{{ item.title }}</div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="card" style="text-align:center; padding:3rem 1.5rem;">
+      <p style="color:var(--text-muted); font-size:1.1rem; margin-bottom:1rem;">No photos currently available in the selected category.</p>
+      <a href="{{ url_for('public.gallery', category='All') }}" class="btn btn-secondary">View All Photos</a>
+    </div>
+  {% endif %}
+
+  <!-- Note on Lightbox -->
+  <p style="text-align:center; font-size:0.85rem; color:var(--text-muted); margin-top:2rem;">
+    💡 <em>Tip: Tap any photo to enlarge in high resolution with description.</em>
+  </p>
+
+</div>
+{% endblock %}

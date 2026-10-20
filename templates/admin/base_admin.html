@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-layout">
+  
+  <!-- Admin Sidebar (Desktop) -->
+  <aside class="admin-sidebar" aria-label="Admin Navigation Sidebar">
+    <div style="padding:0.5rem 0.85rem 1rem; border-bottom:1px solid var(--border-light); margin-bottom:0.75rem;">
+      <span style="font-size:0.75rem; font-weight:800; color:var(--gold); text-transform:uppercase;">Control Center</span>
+      <h3 style="font-size:1.1rem; color:var(--primary); margin:0;">Admin Console</h3>
+    </div>
+
+    <a href="{{ url_for('admin.dashboard') }}" class="admin-nav-item {% if request.endpoint == 'admin.dashboard' %}active{% endif %}">
+      <span>📊</span> Dashboard
+    </a>
+    <a href="{{ url_for('admin.students') }}" class="admin-nav-item {% if 'students' in request.endpoint %}active{% endif %}">
+      <span>🎓</span> Students
+    </a>
+    <a href="{{ url_for('admin.parents') }}" class="admin-nav-item {% if 'parents' in request.endpoint %}active{% endif %}">
+      <span>👨‍👩‍👧</span> Parent Accounts
+    </a>
+    <a href="{{ url_for('admin.teachers') }}" class="admin-nav-item {% if 'teachers' in request.endpoint %}active{% endif %}">
+      <span>👨‍🏫</span> Teachers &amp; Staff
+    </a>
+    <a href="{{ url_for('admin.attendance') }}" class="admin-nav-item {% if 'attendance' in request.endpoint %}active{% endif %}">
+      <span>📅</span> Daily Attendance
+    </a>
+    <a href="{{ url_for('admin.results') }}" class="admin-nav-item {% if 'results' in request.endpoint %}active{% endif %}">
+      <span>📝</span> Enter Results
+    </a>
+    <a href="{{ url_for('admin.fees') }}" class="admin-nav-item {% if 'fees' in request.endpoint %}active{% endif %}">
+      <span>💳</span> Manage Fees
+    </a>
+    <a href="{{ url_for('admin.timetable') }}" class="admin-nav-item {% if 'timetable' in request.endpoint %}active{% endif %}">
+      <span>⏰</span> Timetable
+    </a>
+    <a href="{{ url_for('admin.notices') }}" class="admin-nav-item {% if 'notices' in request.endpoint %}active{% endif %}">
+      <span>📢</span> Post Notices
+    </a>
+    <a href="{{ url_for('admin.gallery') }}" class="admin-nav-item {% if 'gallery' in request.endpoint %}active{% endif %}">
+      <span>🖼️</span> Gallery Uploads
+    </a>
+    <a href="{{ url_for('admin.pages') }}" class="admin-nav-item {% if 'pages' in request.endpoint %}active{% endif %}">
+      <span>✏️</span> Edit Page CMS
+    </a>
+    <a href="{{ url_for('admin.messages') }}" class="admin-nav-item {% if 'messages' in request.endpoint %}active{% endif %}">
+      <span>✉️</span> Inquiries Inbox
+    </a>
+
+    <div style="margin-top:auto; padding-top:1rem; border-top:1px solid var(--border-light);">
+      <a href="{{ url_for('auth.logout') }}" class="admin-nav-item" style="color:#dc2626;">
+        <span>🚪</span> Log Out
+      </a>
+    </div>
+  </aside>
+
+  <!-- Admin Main Content Area -->
+  <section class="admin-content">
+    
+    <!-- Quick Horizontal Nav for Mobile Admin users -->
+    <div class="filter-pills" style="display:flex; lg:none; margin-bottom:1rem;">
+      <a href="{{ url_for('admin.dashboard') }}" class="filter-pill {% if request.endpoint == 'admin.dashboard' %}active{% endif %}">Dashboard</a>
+      <a href="{{ url_for('admin.students') }}" class="filter-pill {% if 'students' in request.endpoint %}active{% endif %}">Students</a>
+      <a href="{{ url_for('admin.parents') }}" class="filter-pill {% if 'parents' in request.endpoint %}active{% endif %}">Parents</a>
+      <a href="{{ url_for('admin.attendance') }}" class="filter-pill {% if 'attendance' in request.endpoint %}active{% endif %}">Attendance</a>
+      <a href="{{ url_for('admin.results') }}" class="filter-pill {% if 'results' in request.endpoint %}active{% endif %}">Results</a>
+      <a href="{{ url_for('admin.fees') }}" class="filter-pill {% if 'fees' in request.endpoint %}active{% endif %}">Fees</a>
+      <a href="{{ url_for('admin.notices') }}" class="filter-pill {% if 'notices' in request.endpoint %}active{% endif %}">Notices</a>
+      <a href="{{ url_for('admin.gallery') }}" class="filter-pill {% if 'gallery' in request.endpoint %}active{% endif %}">Gallery</a>
+      <a href="{{ url_for('admin.pages') }}" class="filter-pill {% if 'pages' in request.endpoint %}active{% endif %}">CMS</a>
+      <a href="{{ url_for('admin.messages') }}" class="filter-pill {% if 'messages' in request.endpoint %}active{% endif %}">Inbox</a>
+    </div>
+
+    {% block admin_content %}{% endblock %}
+  </section>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}

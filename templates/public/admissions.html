@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+
+{% block title %}Admissions & Fees Structure | Al Majid Mission School{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top:1.5rem; padding-bottom:3rem;">
+
+  <!-- Header -->
+  <div class="section-header">
+    <span class="section-subtitle">Academic Session 2026-27</span>
+    <h1 class="section-title">Admissions &amp; Fee Structure</h1>
+    <p class="section-desc">
+      Transparent admissions, merit-friendly environment, and accessible education for every child in Hazipur and surrounding districts.
+    </p>
+  </div>
+
+  <!-- Step-by-Step Admission Process Flow -->
+  <div style="margin-bottom:3rem;">
+    <h2 style="font-size:1.35rem; color:var(--primary); margin-bottom:1.25rem; text-align:center;">Simple 4-Step Admission Journey</h2>
+    
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:1rem;">
+      <div class="card" style="border-top:4px solid var(--primary); text-align:center;">
+        <span class="badge badge-primary" style="margin-bottom:0.75rem;">Step 1</span>
+        <h4 style="margin-bottom:0.4rem;">Inquiry &amp; Form</h4>
+        <p style="font-size:0.875rem; color:var(--text-muted);">
+          Collect the Application Form from school office (9 AM - 2 PM) or fill the online contact inquiry form.
+        </p>
+      </div>
+
+      <div class="card" style="border-top:4px solid var(--gold); text-align:center;">
+        <span class="badge badge-warning" style="margin-bottom:0.75rem;">Step 2</span>
+        <h4 style="margin-bottom:0.4rem;">Document Verification</h4>
+        <p style="font-size:0.875rem; color:var(--text-muted);">
+          Submit birth certificate, previous school transfer certificate (if applicable), and passport-size photographs.
+        </p>
+      </div>
+
+      <div class="card" style="border-top:4px solid #0284c7; text-align:center;">
+        <span class="badge badge-info" style="margin-bottom:0.75rem;">Step 3</span>
+        <h4 style="margin-bottom:0.4rem;">Friendly Interaction</h4>
+        <p style="font-size:0.875rem; color:var(--text-muted);">
+          An informal readiness session for child and brief interaction with parents to align on learning aspirations.
+        </p>
+      </div>
+
+      <div class="card" style="border-top:4px solid #16a34a; text-align:center;">
+        <span class="badge badge-success" style="margin-bottom:0.75rem;">Step 4</span>
+        <h4 style="margin-bottom:0.4rem;">Enrollment &amp; ID</h4>
+        <p style="font-size:0.875rem; color:var(--text-muted);">
+          Payment of admission session fee, receipt issuance, uniform measurements, and parent portal activation.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Classes Offered Grid -->
+  <div class="card" style="margin-bottom:3rem; padding:1.75rem;">
+    <h3 style="color:var(--primary); font-size:1.3rem; margin-bottom:1rem;">Classes Offered &amp; Age Criteria</h3>
+    <div class="table-responsive">
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>Level</th>
+            <th>Grades / Classes</th>
+            <th>Minimum Age (as of Jan 1)</th>
+            <th>Curriculum Medium</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Pre-Primary</strong></td>
+            <td>Nursery, Lower KG, Upper KG</td>
+            <td>3 to 5 Years</td>
+            <td>Play-based English &amp; Mother Tongue</td>
+          </tr>
+          <tr>
+            <td><strong>Primary Wing</strong></td>
+            <td>Class I to Class IV</td>
+            <td>6 to 9 Years</td>
+            <td>English &amp; Bengali (WBBSE syllabus)</td>
+          </tr>
+          <tr>
+            <td><strong>Upper Primary</strong></td>
+            <td>Class V to Class VIII</td>
+            <td>10 to 13 Years</td>
+            <td>Comprehensive Academic &amp; IT foundation</td>
+          </tr>
+          <tr>
+            <td><strong>Secondary</strong></td>
+            <td>Class IX and Class X</td>
+            <td>14 to 15 Years</td>
+            <td>Madhyamik Board preparation &amp; Career labs</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Transparent Fee Structure Table -->
+  <div class="card" id="fee-structure" style="margin-bottom:3rem; padding:1.75rem; border:2px solid var(--primary-border);">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:1rem;">
+      <div>
+        <span class="section-subtitle">Affordable &amp; Honest</span>
+        <h3 style="color:var(--primary); font-size:1.35rem; margin-bottom:0.25rem;">Standard Fee Structure (2026-27)</h3>
+      </div>
+      <span class="badge badge-success" style="font-size:0.85rem;">No Capitation or Donation</span>
+    </div>
+
+    <div class="table-responsive">
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>Class / Section</th>
+            <th>Monthly Tuition</th>
+            <th>Session &amp; Dev. Fee (Annual)</th>
+            <th>Computer &amp; Lab Fee (Quarterly)</th>
+            <th>Exam Fee (Per Term)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Nursery to Upper KG</strong></td>
+            <td>₹ 750 / mo</td>
+            <td>₹ 2,200</td>
+            <td>Included</td>
+            <td>₹ 250</td>
+          </tr>
+          <tr>
+            <td><strong>Class I – Class IV</strong></td>
+            <td>₹ 850 / mo</td>
+            <td>₹ 2,500</td>
+            <td>₹ 300 / qtr</td>
+            <td>₹ 300</td>
+          </tr>
+          <tr>
+            <td><strong>Class V – Class VII</strong></td>
+            <td>₹ 950 / mo</td>
+            <td>₹ 2,800</td>
+            <td>₹ 450 / qtr</td>
+            <td>₹ 350</td>
+          </tr>
+          <tr>
+            <td><strong>Class VIII – Class X</strong></td>
+            <td>₹ 1,200 / mo</td>
+            <td>₹ 3,500</td>
+            <td>₹ 600 / qtr</td>
+            <td>₹ 450</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="background:var(--bg-muted); border-radius:var(--radius-sm); padding:1rem; margin-top:1.25rem;">
+      <h4 style="font-size:0.95rem; color:var(--text-main); margin-bottom:0.35rem;">Concessions &amp; Scholarship Policy:</h4>
+      <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5;">
+        {{ fees_info.content }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Documents Required List & Inquiry Prompt -->
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:1.5rem;">
+    <div class="card" style="padding:1.5rem;">
+      <h4 style="color:var(--primary); margin-bottom:0.75rem;">Required Documents Checklist</h4>
+      <ul style="padding-left:1.25rem; font-size:0.9rem; color:var(--text-muted); display:flex; flex-direction:column; gap:0.4rem;">
+        <li>Original &amp; photocopy of Birth Certificate</li>
+        <li>Original Transfer Certificate (for Class II onwards)</li>
+        <li>Photocopy of student &amp; parent Aadhaar card</li>
+        <li>4 recent color passport-size photos of the applicant</li>
+        <li>Previous academic report card / marksheet</li>
+        <li>Blood group verification document</li>
+      </ul>
+    </div>
+
+    <div class="card" style="padding:1.5rem; background:var(--primary-lightest); border-color:var(--primary-border); display:flex; flex-direction:column; justify-content:center;">
+      <h4 style="color:var(--primary); margin-bottom:0.5rem;">Have Questions on Admissions?</h4>
+      <p style="font-size:0.9rem; color:var(--text-main); margin-bottom:1.25rem;">
+        Our admissions counselor is available Monday to Saturday to guide you through seat availability and eligibility.
+      </p>
+      <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+        <a href="{{ url_for('public.contact') }}" class="btn btn-primary">Send Admission Inquiry</a>
+        <a href="tel:+919434056789" class="btn btn-secondary">📞 Call Admission Desk</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

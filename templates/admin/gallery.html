@@ -1,0 +1,92 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Manage Gallery Photos | Admin Panel{% endblock %}
+
+{% block admin_content %}
+
+  <div class="admin-header">
+    <div>
+      <span class="section-subtitle">Visual Media</span>
+      <h1 class="admin-title">School Gallery &amp; Photos</h1>
+    </div>
+    <a href="#upload" class="btn btn-primary" onclick="document.getElementById('uploadPhotoForm').style.display='block'">
+      ➕ Upload Photo
+    </a>
+  </div>
+
+  <!-- Upload Photo Form -->
+  <div class="admin-card" id="uploadPhotoForm" style="display:none; border:2px solid var(--primary-border); margin-bottom:1.5rem;">
+    <div class="admin-card-header">
+      <h3 class="admin-card-title">Upload Gallery Photo</h3>
+      <button type="button" class="btn btn-sm btn-secondary" onclick="document.getElementById('uploadPhotoForm').style.display='none'">✕ Close</button>
+    </div>
+
+    <form method="POST" action="{{ url_for('admin.gallery') }}" enctype="multipart/form-data">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:1rem;">
+        <div class="form-group">
+          <label class="form-label">Photo Title *</label>
+          <input type="text" name="title" class="form-control" placeholder="e.g. Science Exhibition 2026" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Category *</label>
+          <select name="category" class="form-select">
+            <option value="Campus">Campus</option>
+            <option value="Academics">Academics</option>
+            <option value="Science Lab">Science Lab</option>
+            <option value="Sports">Sports</option>
+            <option value="Cultural">Cultural</option>
+            <option value="Celebration">Celebration</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Select Image File</label>
+          <input type="file" name="file" class="form-control" accept="image/*">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Or Image URL / Existing Path</label>
+          <input type="text" name="image_url" class="form-control" placeholder="/static/images/school/hero_classroom.jpg">
+        </div>
+
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label class="form-label">Caption / Description</label>
+          <input type="text" name="caption" class="form-control" placeholder="Brief note displayed in lightbox...">
+        </div>
+      </div>
+
+      <div style="margin-top:1rem;">
+        <button type="submit" class="btn btn-primary">Save to Gallery</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Gallery Photos Grid -->
+  <div class="admin-card">
+    <div class="admin-card-header">
+      <h3 class="admin-card-title">Current Gallery Photos ({{ gallery|length }})</h3>
+    </div>
+
+    <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap:1rem;">
+      {% for item in gallery %}
+        <div style="border:1px solid var(--border-light); border-radius:var(--radius-sm); overflow:hidden; background:var(--bg-muted);">
+          <img src="{{ item.image_url }}" alt="{{ item.title }}" style="width:100%; aspect-ratio:4/3; object-fit:cover;" loading="lazy">
+          <div style="padding:0.75rem;">
+            <span class="badge badge-primary" style="font-size:0.7rem;">{{ item.category }}</span>
+            <h4 style="font-size:0.9rem; margin:0.35rem 0 0.5rem; color:var(--text-main);">{{ item.title }}</h4>
+            <form method="POST" action="{{ url_for('admin.remove_gallery', item_id=item.id) }}" data-confirm="Remove this photo from gallery?">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-sm btn-danger btn-block" style="padding:0.3rem; font-size:0.75rem;">
+                🗑️ Delete Photo
+              </button>
+            </form>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+{% endblock %}
